@@ -1,0 +1,377 @@
+{
+  "cmd": 3100,
+  "sequence_id": "dbe83c05-3d38-4e54-8ace-3feadcb88d84",
+  "downlink_body": {
+    "pull_singe_chain_downlink_body": {
+      "messages": [
+        {
+          "conversation_id": "40000000000000001",
+          "message_id": "40000000000000001",
+          "message_body_version": "1",
+          "sender_id": "40000000000000001",
+          "user_type": 2,
+          "status": 0,
+          "content_type": 9999,
+          "content": "",
+          "content_status": 100,
+          "index_in_conv": "3",
+          "create_time": "1787021454",
+          "sec_sender": "SANITIZED",
+          "thinking_content": "",
+          "content_block": [
+            {
+              "block_type": 10040,
+              "block_id": "40000000000000001",
+              "parent_id": "",
+              "content": {
+                "thinking_block": {
+                  "finish_title": "已完成图片生成",
+                  "streaming_title": "正在生成图片",
+                  "icon_url": "",
+                  "icon_url_dark": "",
+                  "empty_disable_click": true
+                },
+                "pc_event_block": ""
+              },
+              "meta_info": [],
+              "is_finish": true,
+              "append_fields": []
+            }
+          ],
+          "tts_content": "",
+          "update_time": "1787021454",
+          "receiver_id": "230273446841596",
+          "send_scene": "5",
+          "ext": {
+            "agent_id": "40000000000000001",
+            "agent_name": "Agent-Creation",
+            "ai_create_show_mode": "mixed",
+            "archive_state": "mask_init",
+            "before_content_type": "9999",
+            "bot_state": "{\"bot_id\":\"40000000000000001\",\"bot_name\":\"豆包\",\"agent_name\":\"Agent-Creation\",\"agent_id\":\"40000000000000001\"}",
+            "chat_ability": "{\"ability_type\":3,\"ability_param\":\"{\\\"ability_param\\\":{\\\"model\\\":\\\"Seedream 4.5\\\",\\\"ratio\\\":\\\"auto\\\"},\\\"ability_type\\\":1}\"}",
+            "chat_id": "40000000000000001",
+            "chat_next": "1",
+            "client_report_scene": "gui",
+            "cot_switch": "0",
+            "cot_ui_style": "summary",
+            "hide_skip_think": "1",
+            "inner_app_id": "497858",
+            "inner_did": "40000000000000001",
+            "inner_log_id": "20260818105051FC38D7132654B99C7299",
+            "inner_platform": "web",
+            "input_skill": "{\"skill_id\":\"3\",\"skill_type\":3,\"template_key\":\"\"}",
+            "is_deep_thinking": "1",
+            "is_deep_thinking_show": "1",
+            "is_general_task": "0",
+            "llm_model_type": "38",
+            "model_id": "38",
+            "model_type": "38",
+            "need_deep_think": "0",
+            "pre_read_conv_version": "1787021454143402",
+            "read_conv_version": "1787021454143402",
+            "regen_no_replace": "1",
+            "reply_unique_key": "54c33644-daab-437e-84a9-af26ea2fece0",
+            "review_scenario_id": "200000000178",
+            "samantha_context": "{\"query_context\":{\"ref_images\":[{\"image_token\":\"tos-cn-i-a9rns2rl98/c23d17c65e1c4b38a8f27e36554c5ea3.png\",\"url\":\"\",\"identifier\":\"93199e40-9aaf-11f1-8b00-b5d317306356\",\"refer_types\":\"\",\"review_status\":1}]}}",
+            "speaker_id": "zh_female_wenroutaozi_uranus_bigtts",
+            "tea_tags_time_cost": "{\"ack_cost_time\":\"191\",\"first_packet_cost_time\":\"2406\"}",
+            "ugc_voice_id": "104",
+            "update_version_code": "0",
+            "use_content_block": "1",
+            "use_creation": "1",
+            "use_floating_think": "1"
+          },
+          "tags": [],
+          "suggest_questions": [],
+          "local_message_id": "",
+          "section_id": "40000000000000001",
+          "bot_reply_message_id": "40000000000000001",
+          "regen_msg_list": [],
+          "message_action_list": [
+            {
+              "name": "喜欢",
+              "key": "like",
+              "icon": {
+                "type": "action-like",
+                "default_url": "",
+                "active_url": ""
+              },
+              "trigger_url": "",
+              "position": "0"
+            },
+            {
+              "name": "不喜欢",
+              "key": "dislike",
+              "icon": {
+                "type": "action-dislike",
+                "default_url": "",
+                "active_url": ""
+              },
+              "trigger_url": "",
+              "position": "1"
+            }
+          ],
+          "feedback_type": 0,
+          "fetch_token": "40000000000000001",
+          "suggest_questions_v2": []
+        },
+        {
+          "conversation_id": "40000000000000001",
+          "message_id": "40000000000000001",
+          "message_body_version": "1",
+          "sender_id": "230273446841596",
+          "user_type": 1,
+          "status": 0,
+          "content_type": 9999,
+          "content": "",
+          "content_status": 0,
+          "index_in_conv": "2",
+          "create_time": "1787021452",
+          "sec_sender": "SANITIZED",
+          "thinking_content": "",
+          "content_block": [
+            {
+              "block_type": 10000,
+              "block_id": "04952b21-2d06-498b-81cd-b155af9f1483",
+              "parent_id": "",
+              "content": {
+                "text_block": {
+                  "text": "生成图片：改成油画风",
+                  "icon_url": "",
+                  "icon_url_dark": "",
+                  "summary": ""
+                },
+                "pc_event_block": ""
+              },
+              "meta_info": [],
+              "is_finish": true,
+              "append_fields": []
+            }
+          ],
+          "tts_content": "生成图片：改成油画风",
+          "update_time": "1787021452",
+          "receiver_id": "230273446841596",
+          "send_scene": "5",
+          "ext": {
+            "answer_with_suggest": "0",
+            "archive_state": "mask_init",
+            "bot_id": "40000000000000001",
+            "bot_source": "BotStudio",
+            "chat_ability": "{\"ability_type\":3,\"ability_param\":\"{\\\"ability_param\\\":{\\\"model\\\":\\\"Seedream 4.5\\\",\\\"ratio\\\":\\\"auto\\\"},\\\"ability_type\\\":1}\"}",
+            "chat_id": "40000000000000001",
+            "chat_next": "1",
+            "client_report_scene": "gui",
+            "collection_id": "0a7d0791-e9f8-4cde-a59c-c4098e320e0a",
+            "commerce_credit_config_enable": "0",
+            "conversation_init_option": "{\"need_ack_conversation\":true}",
+            "cot_switch": "0",
+            "group": "1787021451",
+            "inner_app_id": "497858",
+            "inner_did": "40000000000000001",
+            "inner_log_id": "20260818105051FC38D7132654B99C7299",
+            "inner_platform": "web",
+            "input_skill": "{\"skill_id\":\"3\",\"skill_type\":3,\"template_key\":\"\"}",
+            "is_ai_playground": "false",
+            "is_finish": "1",
+            "llm_model_type": "38",
+            "message_from": "InputBox",
+            "model_type": "38",
+            "pre_read_conv_version": "1787021452040859",
+            "read_conv_version": "1787021452040859",
+            "reply_unique_key": "54c33644-daab-437e-84a9-af26ea2fece0",
+            "samantha_context": "{\"query_context\":{\"ref_images\":[{\"image_token\":\"tos-cn-i-a9rns2rl98/c23d17c65e1c4b38a8f27e36554c5ea3.png\",\"url\":\"\",\"identifier\":\"93199e40-9aaf-11f1-8b00-b5d317306356\",\"refer_types\":\"\",\"review_status\":1}]}}",
+            "search_engine_type": "4",
+            "speaker_id": "zh_female_wenroutaozi_uranus_bigtts",
+            "sub_conv_firstmet_type": "1",
+            "ugc_voice_id": "104",
+            "update_version_code": "0",
+            "use_content_block": "1"
+          },
+          "tags": [],
+          "suggest_questions": [],
+          "local_message_id": "75c050d0-09cd-4bdc-a3cc-a1c2b1fa3fa1",
+          "section_id": "40000000000000001",
+          "bot_reply_message_id": "0",
+          "regen_msg_list": [],
+          "message_action_list": [
+            {
+              "name": "喜欢",
+              "key": "like",
+              "icon": {
+                "type": "action-like",
+                "default_url": "",
+                "active_url": ""
+              },
+              "trigger_url": "",
+              "position": "0"
+            },
+            {
+              "name": "不喜欢",
+              "key": "dislike",
+              "icon": {
+                "type": "action-dislike",
+                "default_url": "",
+                "active_url": ""
+              },
+              "trigger_url": "",
+              "position": "1"
+            }
+          ],
+          "feedback_type": 0,
+          "fetch_token": "40000000000000001",
+          "suggest_questions_v2": []
+        },
+        {
+          "conversation_id": "40000000000000001",
+          "message_id": "40000000000000001",
+          "message_body_version": "1",
+          "sender_id": "230273446841596",
+          "user_type": 1,
+          "status": 0,
+          "content_type": 9999,
+          "content": "",
+          "content_status": 0,
+          "index_in_conv": "1",
+          "create_time": "1787021452",
+          "biz_content_type": "flow_nested",
+          "sec_sender": "SANITIZED",
+          "thinking_content": "",
+          "content_block": [
+            {
+              "block_type": 10052,
+              "block_id": "54b75c7b-5968-4a06-a444-410d55e40622",
+              "parent_id": "",
+              "content": {
+                "attachment_block": {
+                  "attachments": [
+                    {
+                      "type": 1,
+                      "identifier": "93199e40-9aaf-11f1-8b00-b5d317306356",
+                      "image": {
+                        "uri": "tos-cn-i-a9rns2rl98/c23d17c65e1c4b38a8f27e36554c5ea3.png",
+                        "image_thumb": {
+                          "url": "https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/c23d17c65e1c4b38a8f27e36554c5ea3.png~tplv-a9rns2rl98-image.png?lk3s=SANITIZED&rcl=SANITIZED&rrcfp=SANITIZED&x-expires=SANITIZED&x-signature=SANITIZED",
+                          "width": 0,
+                          "height": 0,
+                          "format": "",
+                          "url_formats": {}
+                        },
+                        "image_ori": {
+                          "url": "https://p6-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/c23d17c65e1c4b38a8f27e36554c5ea3.png~tplv-a9rns2rl98-image.png?lk3s=SANITIZED&rcl=SANITIZED&rrcfp=SANITIZED&x-expires=SANITIZED&x-signature=SANITIZED",
+                          "width": 2171,
+                          "height": 1640,
+                          "format": "",
+                          "url_formats": {}
+                        },
+                        "image_preview": {
+                          "url": "https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/c23d17c65e1c4b38a8f27e36554c5ea3.png~tplv-a9rns2rl98-image.png?lk3s=SANITIZED&rcl=SANITIZED&rrcfp=SANITIZED&x-expires=SANITIZED&x-signature=SANITIZED",
+                          "width": 0,
+                          "height": 0,
+                          "format": "",
+                          "url_formats": {}
+                        },
+                        "name": "【哲风壁纸】大海-岛屿-栈桥.png"
+                      },
+                      "review_state": 1,
+                      "parse_state": 0,
+                      "progress": 100,
+                      "upload_status": 1,
+                      "src": ""
+                    }
+                  ]
+                },
+                "pc_event_block": ""
+              },
+              "meta_info": [],
+              "is_finish": true,
+              "append_fields": []
+            }
+          ],
+          "tts_content": "{\"entities\":[{\"entity_type\":2,\"entity_content\":{\"image\":{\"key\":\"tos-cn-i-a9rns2rl98/c23d17c65e1c4b38a8f27e36554c5ea3.png\",\"image_thumb\":null,\"image_ori\":{\"url\":\"https://p6-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/c23d17c65e1c4b38a8f27e36554c5ea3.png~tplv-a9rns2rl98-image.png?lk3s=SANITIZED&rcl=SANITIZED&rrcfp=SANITIZED&x-expires=SANITIZED&x-signature=SANITIZED\",\"format\":\"\",\"width\":2171,\"height\":1640},\"image_raw\":null,\"preview_img\":null,\"identifier\":\"93199e40-9aaf-11f1-8b00-b5d317306356\",\"resource_id\":null}},\"identifier\":\"93199e40-9aaf-11f1-8b00-b5d317306356\",\"file_name_state\":1,\"file_parse_state\":0}],\"text\":\"\"}",
+          "update_time": "1787021452",
+          "receiver_id": "230273446841596",
+          "send_scene": "5",
+          "ext": {
+            "answer_with_suggest": "0",
+            "archive_state": "mask_init",
+            "biz_content_type": "flow_nested",
+            "bot_id": "40000000000000001",
+            "bot_source": "BotStudio",
+            "chat_ability": "{\"ability_type\":3,\"ability_param\":\"{\\\"ability_param\\\":{\\\"model\\\":\\\"Seedream 4.5\\\",\\\"ratio\\\":\\\"auto\\\"},\\\"ability_type\\\":1}\"}",
+            "chat_id": "40000000000000001",
+            "chat_next": "1",
+            "client_report_scene": "gui",
+            "collection_id": "0a7d0791-e9f8-4cde-a59c-c4098e320e0a",
+            "commerce_credit_config_enable": "0",
+            "conversation_init_option": "{\"need_ack_conversation\":true}",
+            "cot_switch": "0",
+            "group": "1787021451",
+            "inner_app_id": "497858",
+            "inner_did": "40000000000000001",
+            "inner_log_id": "20260818105051FC38D7132654B99C7299",
+            "inner_platform": "web",
+            "input_skill": "{\"skill_id\":\"3\",\"skill_type\":3,\"template_key\":\"\"}",
+            "is_ai_playground": "false",
+            "is_finish": "1",
+            "llm_model_type": "38",
+            "message_from": "InputBox",
+            "model_type": "38",
+            "pre_read_conv_version": "1787021451963510",
+            "read_conv_version": "1787021451963510",
+            "reply_unique_key": "54c33644-daab-437e-84a9-af26ea2fece0",
+            "samantha_context": "{\"query_context\":{\"ref_images\":[{\"image_token\":\"tos-cn-i-a9rns2rl98/c23d17c65e1c4b38a8f27e36554c5ea3.png\",\"url\":\"\",\"identifier\":\"93199e40-9aaf-11f1-8b00-b5d317306356\",\"refer_types\":\"\",\"review_status\":1}]}}",
+            "search_engine_type": "4",
+            "speaker_id": "zh_female_wenroutaozi_uranus_bigtts",
+            "sub_conv_firstmet_type": "1",
+            "ugc_voice_id": "104",
+            "update_version_code": "0",
+            "use_content_block": "1"
+          },
+          "tags": [],
+          "suggest_questions": [],
+          "local_message_id": "8c2f4b20-9aaf-11f1-8b00-b5d317306356",
+          "section_id": "40000000000000001",
+          "bot_reply_message_id": "0",
+          "regen_msg_list": [],
+          "message_action_list": [
+            {
+              "name": "喜欢",
+              "key": "like",
+              "icon": {
+                "type": "action-like",
+                "default_url": "",
+                "active_url": ""
+              },
+              "trigger_url": "",
+              "position": "0"
+            },
+            {
+              "name": "不喜欢",
+              "key": "dislike",
+              "icon": {
+                "type": "action-dislike",
+                "default_url": "",
+                "active_url": ""
+              },
+              "trigger_url": "",
+              "position": "1"
+            }
+          ],
+          "feedback_type": 0,
+          "fetch_token": "40000000000000001",
+          "suggest_questions_v2": []
+        }
+      ],
+      "has_more": false,
+      "regen_messages": {},
+      "msg_cursor": "1"
+    }
+  },
+  "version": "1",
+  "status_code": 0,
+  "status_desc": "OK",
+  "ext": {
+    "tt_stable": "1"
+  }
+}

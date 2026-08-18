@@ -1,0 +1,8 @@
+id: 0
+event: SSE_HEARTBEAT
+data: {}
+
+id: 0
+event: SSE_ACK
+data: {"query_list":[{"question_id":"40000000000000001","local_message_id":"d0f8dfa0-0000-11f1-bca3-72ca64c846c6","message_index":1}],"ack_client_meta":{"conversation_id":"40000000000000002","local_conversation_id":"local_6192411728216488","conversation_type":3,"section_id":"40000000000000003"}}
+

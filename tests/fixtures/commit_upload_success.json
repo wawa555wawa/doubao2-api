@@ -1,0 +1,40 @@
+{
+  "ResponseMetadata": {
+    "RequestId": "202608181121338B821E855B6B0A022AA5",
+    "Action": "CommitImageUpload",
+    "Version": "2018-08-01",
+    "Service": "imagex",
+    "Region": "cn-north-1"
+  },
+  "Result": {
+    "Results": [
+      {
+        "Uri": "tos-cn-i-a9rns2rl98/0d675481b5004c6cb7237bf4b7fd3a82.png",
+        "UriStatus": 2000
+      }
+    ],
+    "RequestId": "202608181121338B821E855B6B0A022AA5",
+    "PluginResult": [
+      {
+        "FileName": "0d675481b5004c6cb7237bf4b7fd3a82.png",
+        "SourceUri": "tos-cn-i-a9rns2rl98/0d675481b5004c6cb7237bf4b7fd3a82.png",
+        "ImageUri": "tos-cn-i-a9rns2rl98/0d675481b5004c6cb7237bf4b7fd3a82.png",
+        "ImageWidth": 2171,
+        "ImageHeight": 1640,
+        "ImageMd5": "761038eff64c4f9ff8ccab27666ea8a7",
+        "ImageFormat": "jpeg",
+        "ImageSize": 641070,
+        "FrameCnt": 1,
+        "ContentType": "application/json; charset=utf-8",
+        "NotFound": false,
+        "Orientation": {
+          "Rotation": 0,
+          "Fliph": false,
+          "Flipv": false
+        },
+        "ColorModel": "ycbcr",
+        "ImageAve": ""
+      }
+    ]
+  }
+}

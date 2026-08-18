@@ -1,0 +1,11 @@
+id: 0
+event: SSE_HEARTBEAT
+data: {}
+
+id: 0
+event: DOWNLINK_CMD
+data: {"cmd":50080,"sequence_id":"40000000000000001","downlink_body":{"pull_msg_notify":{"conversation_id":"40000000000000001","message_index":"1","limit":2}},"version":"1"}
+
+id: 1
+event: SSE_REPLY_END
+data: {"end_type":3}

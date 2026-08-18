@@ -1,0 +1,57 @@
+{
+  "ResponseMetadata": {
+    "RequestId": "20260818112132C6ACA4FAFDFF3DB935AD",
+    "Action": "ApplyImageUpload",
+    "Version": "2018-08-01",
+    "Service": "imagex",
+    "Region": "cn-north-1"
+  },
+  "Result": {
+    "UploadAddress": {
+      "StoreInfos": [
+        {
+          "StoreUri": "tos-cn-i-a9rns2rl98/0d675481b5004c6cb7237bf4b7fd3a82.png",
+          "Auth": "SANITIZED",
+          "UploadID": "cd6383ba39ff42289f513c9cfc33c57a"
+        }
+      ],
+      "UploadHosts": [
+        "tos-d-ct-lf.snssdk.com"
+      ],
+      "UploadHeader": null,
+      "SessionKey": "SANITIZED",
+      "Cloud": "",
+      "CloudAuth": "",
+      "Idc": "",
+      "Cluster": ""
+    },
+    "FallbackUploadAddress": {
+      "StoreInfos": null,
+      "UploadHosts": null,
+      "UploadHeader": null,
+      "SessionKey": "SANITIZED",
+      "Cloud": "",
+      "CloudAuth": "",
+      "Idc": "",
+      "Cluster": ""
+    },
+    "InnerUploadAddress": {
+      "UploadNodes": [
+        {
+          "StoreInfos": [
+            {
+              "StoreUri": "tos-cn-i-a9rns2rl98/0d675481b5004c6cb7237bf4b7fd3a82.png",
+              "Auth": "SANITIZED",
+              "UploadID": "cd6383ba39ff42289f513c9cfc33c57a"
+            }
+          ],
+          "UploadHost": "tos-d-ct-lf.snssdk.com",
+          "UploadHeader": null,
+          "SessionKey": "SANITIZED"
+        }
+      ]
+    },
+    "RequestId": "20260818112132C6ACA4FAFDFF3DB935AD",
+    "SDKParam": null
+  }
+}

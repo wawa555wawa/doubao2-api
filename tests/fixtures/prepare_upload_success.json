@@ -1,0 +1,16 @@
+{
+  "code": 0,
+  "msg": "",
+  "data": {
+    "service_id": "a9rns2rl98",
+    "upload_path_prefix": "rc/pc/bot-chat",
+    "upload_host": "imagex.bytedanceapi.com",
+    "upload_auth_token": {
+      "access_key": "SANITIZED",
+      "secret_key": "SANITIZED",
+      "session_token": "SANITIZED",
+      "expired_time": "2026-08-18T12:21:31+08:00",
+      "current_time": "2026-08-18T11:21:31+08:00"
+    }
+  }
+}

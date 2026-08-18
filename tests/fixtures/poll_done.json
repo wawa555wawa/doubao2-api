@@ -1,0 +1,519 @@
+{
+  "cmd": 3100,
+  "sequence_id": "fa974c30-f941-476e-a8c2-781f74dda349",
+  "downlink_body": {
+    "pull_singe_chain_downlink_body": {
+      "messages": [
+        {
+          "conversation_id": "40000000000000001",
+          "message_id": "40000000000000001",
+          "message_body_version": "1",
+          "sender_id": "40000000000000001",
+          "user_type": 2,
+          "status": 0,
+          "content_type": 9999,
+          "content": "",
+          "content_status": 0,
+          "index_in_conv": "3",
+          "create_time": "1787015887",
+          "sec_sender": "SANITIZED",
+          "thinking_content": "",
+          "content_block": [
+            {
+              "block_type": 10000,
+              "block_id": "40000000000000001",
+              "parent_id": "",
+              "content": {
+                "text_block": {
+                  "text": "我会把原图设定作为唯一角色锚点，只调整表情、动作和自拍氛围，比例改成 1:1。",
+                  "icon_url": "",
+                  "icon_url_dark": "",
+                  "summary": ""
+                },
+                "pc_event_block": ""
+              },
+              "meta_info": [],
+              "is_finish": true,
+              "append_fields": []
+            },
+            {
+              "block_type": 10040,
+              "block_id": "40000000000000001",
+              "parent_id": "",
+              "content": {
+                "thinking_block": {
+                  "finish_title": "已完成图片生成",
+                  "streaming_title": "正在生成图片",
+                  "icon_url": "",
+                  "icon_url_dark": "",
+                  "empty_disable_click": true
+                },
+                "pc_event_block": ""
+              },
+              "meta_info": [],
+              "is_finish": true,
+              "append_fields": []
+            },
+            {
+              "block_type": 2074,
+              "block_id": "40000000000000001",
+              "parent_id": "",
+              "content": {
+                "creation_block": {
+                  "creations": [
+                    {
+                      "type": 1,
+                      "id": "40000000000000001",
+                      "gen_detail": {
+                        "task_type": 2,
+                        "ref_images": [
+                          {
+                            "url": "https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/30a08632a304445987329e60978b8f1c.jpg~tplv-a9rns2rl98-image_raw.png?lk3s=SANITIZED&rcl=SANITIZED&rrcfp=SANITIZED&x-expires=SANITIZED&x-signature=SANITIZED",
+                            "width": 1199,
+                            "height": 1312,
+                            "format": "",
+                            "url_formats": {}
+                          }
+                        ]
+                      },
+                      "can_publish": true,
+                      "image": {
+                        "key": "tos-cn-i-a9rns2rl98/rc_gen_image/9ac32b2f62a941489b0a100a57c01f57.jpeg",
+                        "image_thumb": {
+                          "url": "https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc_gen_image/9ac32b2f62a941489b0a100a57c01f57.jpeg~tplv-a9rns2rl98-ds_wm_1_5_dk.png?lk3s=SANITIZED&rcl=SANITIZED&rrcfp=SANITIZED&x-expires=SANITIZED&x-signature=SANITIZED",
+                          "width": 2048,
+                          "height": 2048,
+                          "format": "",
+                          "url_formats": {
+                            "heic": "https://p11-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc_gen_image/9ac32b2f62a941489b0a100a57c01f57.jpeg~tplv-a9rns2rl98-hcg_wm_1_5_dk.png?lk3s=SANITIZED&rcl=SANITIZED&rrcfp=SANITIZED&x-expires=SANITIZED&x-signature=SANITIZED"
+                          }
+                        },
+                        "image_ori": {
+                          "url": "https://p11-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc_gen_image/9ac32b2f62a941489b0a100a57c01f57.jpeg~tplv-a9rns2rl98-i_dld_wm_15_dk.png?lk3s=SANITIZED&rcl=SANITIZED&rrcfp=SANITIZED&x-expires=SANITIZED&x-signature=SANITIZED",
+                          "width": 2048,
+                          "height": 2048,
+                          "format": "",
+                          "url_formats": {}
+                        },
+                        "image_preview": {
+                          "url": "https://p11-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc_gen_image/9ac32b2f62a941489b0a100a57c01f57.jpeg~tplv-a9rns2rl98-i_pre_wm_15_dk.png?lk3s=SANITIZED&rcl=SANITIZED&rrcfp=SANITIZED&x-expires=SANITIZED&x-signature=SANITIZED",
+                          "width": 2048,
+                          "height": 2048,
+                          "format": "",
+                          "url_formats": {
+                            "heic": "https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc_gen_image/9ac32b2f62a941489b0a100a57c01f57.jpeg~tplv-a9rns2rl98-i_pre_wm_15_dk.png?lk3s=SANITIZED&rcl=SANITIZED&rrcfp=SANITIZED&x-expires=SANITIZED&x-signature=SANITIZED"
+                          }
+                        },
+                        "image_ori_raw": {
+                          "url": "https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc_gen_image/9ac32b2f62a941489b0a100a57c01f57.jpeg~tplv-a9rns2rl98-image_raw.png?lk3s=SANITIZED&rcl=SANITIZED&rrcfp=SANITIZED&x-expires=SANITIZED&x-signature=SANITIZED",
+                          "width": 2048,
+                          "height": 2048,
+                          "format": "",
+                          "url_formats": {}
+                        },
+                        "image_preview_resize": {
+                          "url": "https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc_gen_image/9ac32b2f62a941489b0a100a57c01f57.jpeg~tplv-a9rns2rl98-img_pre_watermark_1_5_v1.png?lk3s=SANITIZED&rcl=SANITIZED&rrcfp=SANITIZED&x-expires=SANITIZED&x-signature=SANITIZED",
+                          "width": 2048,
+                          "height": 2048,
+                          "format": "",
+                          "url_formats": {
+                            "heic": "https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc_gen_image/9ac32b2f62a941489b0a100a57c01f57.jpeg~tplv-a9rns2rl98-img_pre_watermark_1_5_v1.heic?lk3s=SANITIZED&rcl=SANITIZED&rrcfp=SANITIZED&x-expires=SANITIZED&x-signature=SANITIZED"
+                          }
+                        },
+                        "status": 2,
+                        "placeholder": {
+                          "width": 2048,
+                          "height": 2048,
+                          "description": "Seedream 4.5"
+                        },
+                        "tips": "",
+                        "request_id": "eb2826650563eaeee765fbf655a5b9e442b53c023a4dec1dbc4fe5d391673099",
+                        "image_thumb_formats": {},
+                        "image_thumb_ori_formats": {},
+                        "gen_params": {
+                          "prompt": "以参考图中的银发猫娘为唯一角色锚点，保持人物特征一致：银白色长卷发、猫耳、蓝色蝴蝶结、蓝眼睛、白外套猫爪印、蓝荷叶边裙、猫咪小包、企鹅伙伴，保持与参考图一致的头身比例、体型和肢体比例，不改变人物比例。让角色元气满满地举起手机自拍，俏皮吐舌，猫耳竖起，蓝蝴蝶结微微晃动，蓝眼睛闪闪发亮，嘴角上扬露出灿烂笑容，脸颊淡淡红晕；企鹅伙伴在旁边好奇探头。画面为明亮温暖的室内光线，可爱活泼，清爽柔和的二次元插画风，干净背景，方形构图，角色居中完整呈现。",
+                          "neg_prompt": "",
+                          "ratio": "1:1",
+                          "img_uri": "tos-cn-i-a9rns2rl98/30a08632a304445987329e60978b8f1c.jpg",
+                          "model": "",
+                          "img_uris": [
+                            "tos-cn-i-a9rns2rl98/30a08632a304445987329e60978b8f1c.jpg"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                },
+                "pc_event_block": ""
+              },
+              "meta_info": [],
+              "is_finish": true,
+              "append_fields": []
+            },
+            {
+              "block_type": 10000,
+              "block_id": "40000000000000001",
+              "parent_id": "",
+              "content": {
+                "text_block": {
+                  "text": "\n已完成，保留了原角色设定和比例，重点强化了自拍时的元气表情与室内暖光感。",
+                  "icon_url": "",
+                  "icon_url_dark": "",
+                  "summary": ""
+                },
+                "pc_event_block": ""
+              },
+              "meta_info": [],
+              "is_finish": true,
+              "append_fields": []
+            }
+          ],
+          "tts_content": "我会把原图设定作为唯一角色锚点，只调整表情、动作和自拍氛围，比例改成 1:1。\n已完成，保留了原角色设定和比例，重点强化了自拍时的元气表情与室内暖光感。",
+          "update_time": "1787015923",
+          "receiver_id": "230273446841596",
+          "send_scene": "5",
+          "ext": {
+            "agent_id": "40000000000000001",
+            "agent_name": "Agent-Creation",
+            "ai_create_show_mode": "mixed",
+            "ai_creation_duration_info": "[{\"type\":1,\"task_id\":\"\",\"duration_info\":[{\"step_name\":\"pre\",\"duration\":0},{\"step_name\":\"pre_prompt_review\",\"duration\":0},{\"step_name\":\"pre_prompt_attachment_review\",\"duration\":732},{\"step_name\":\"rag\",\"duration\":0},{\"step_name\":\"plan\",\"duration\":6089,\"round_duration_info\":[{\"round\":1,\"duration\":4802},{\"round\":2,\"duration\":1287}]},{\"step_name\":\"fc\",\"duration\":19894,\"round_duration_info\":[{\"round\":1,\"duration\":19894},{\"round\":2,\"duration\":0}]},{\"step_name\":\"simple_task\",\"duration\":0},{\"step_name\":\"total\",\"duration\":27238}],\"error_code\":0},{\"type\":2,\"task_id\":\"40000000000000001\",\"duration_info\":[{\"step_name\":\"model\",\"duration\":19691}],\"error_code\":0}]",
+            "ai_creation_res_code": "0",
+            "ai_creation_tool_list": "[{\"task_id\":40000000000000001,\"tool_name\":\"image_edit\",\"req_key\":\"seedream_v43_flow\",\"task_type\":2,\"index\":0,\"status\":4,\"tool_name_list\":[],\"dispatcher_agent\":\"\",\"based_task_id_list\":[],\"agent_version\":\"agent_30\",\"is_multi_round\":false,\"fail_code\":0,\"cache\":0,\"based_message_id_list\":[40000000000000001],\"from_agent_round\":1}]",
+            "archive_state": "mask_init",
+            "before_content_type": "9999",
+            "bot_state": "{\"bot_id\":\"40000000000000001\",\"bot_name\":\"豆包\",\"agent_name\":\"Agent-Creation\",\"agent_id\":\"40000000000000001\"}",
+            "brief": "[卡片]",
+            "chat_ability": "{\"ability_type\":3,\"ability_param\":\"{\\\"ability_param\\\":{\\\"model\\\":\\\"Seedream 4.5\\\",\\\"ratio\\\":\\\"auto\\\"},\\\"ability_type\\\":1}\"}",
+            "chat_id": "40000000000000001",
+            "chat_next": "1",
+            "client_report_scene": "gui",
+            "cot_switch": "0",
+            "cot_ui_style": "summary",
+            "creation_full_content": "[{\"PacketMeta\":null,\"BlockInfo\":{\"BlockType\":10000,\"BlockContent\":{\"block_type\":10000,\"block_id\":\"40000000000000001\",\"content\":{\"text_block\":{\"text\":\"我会把原图设定作为唯一角色锚点，只调整表情、动作和自拍氛围，比例改成 1:1。\"}}},\"BlockContentForTTS\":\"\",\"BlockContentForModel\":null,\"BlockMeta\":{\"block_id\":\"40000000000000001\",\"parent_block_id\":\"\",\"is_finish\":false}},\"PacketTxtValue\":\"\",\"Ext\":null,\"CommandContent\":null},{\"PacketMeta\":null,\"BlockInfo\":{\"BlockType\":10040,\"BlockContent\":{\"block_type\":10040,\"block_id\":\"40000000000000001\",\"content\":{\"thinking_block\":{\"finish_title\":\"已完成图片生成\",\"streaming_title\":\"正在生成图片\",\"empty_disable_click\":true}}},\"BlockContentForTTS\":\"\",\"BlockContentForModel\":null,\"BlockMeta\":{\"block_id\":\"40000000000000001\",\"parent_block_id\":\"\",\"is_finish\":true}},\"PacketTxtValue\":\"\",\"Ext\":null,\"CommandContent\":null},{\"PacketMeta\":null,\"BlockInfo\":{\"BlockType\":2074,\"BlockContent\":{\"block_type\":2074,\"block_id\":\"40000000000000001\",\"content\":{\"creation_block\":{\"creations\":[{\"type\":1,\"id\":\"40000000000000001\",\"gen_detail\":{\"task_type\":2,\"ref_images\":[{\"url\":\"https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/30a08632a304445987329e60978b8f1c.jpg~tplv-a9rns2rl98-image_raw.png?lk3s=SANITIZED&rcl=SANITIZED&rrcfp=SANITIZED&x-expires=SANITIZED&x-signature=SANITIZED\",\"width\":1199,\"height\":1312}]},\"can_publish\":true,\"image\":{\"key\":\"tos-cn-i-a9rns2rl98/rc_gen_image/9ac32b2f62a941489b0a100a57c01f57.jpeg\",\"image_thumb\":{\"url\":\"https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc_gen_image/9ac32b2f62a941489b0a100a57c01f57.jpeg~tplv-a9rns2rl98-ds_wm_1_5_dk.png?lk3s=SANITIZED&rcl=SANITIZED&rrcfp=SANITIZED&x-expires=SANITIZED&x-signature=SANITIZED\",\"width\":2048,\"height\":2048,\"url_formats\":{\"heic\":\"https://p11-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc_gen_image/9ac32b2f62a941489b0a100a57c01f57.jpeg~tplv-a9rns2rl98-hcg_wm_1_5_dk.png?lk3s=SANITIZED&rcl=SANITIZED&rrcfp=SANITIZED&x-expires=SANITIZED&x-signature=SANITIZED\"}},\"image_ori\":{\"url\":\"https://p11-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc_gen_image/9ac32b2f62a941489b0a100a57c01f57.jpeg~tplv-a9rns2rl98-i_dld_wm_15_dk.png?lk3s=SANITIZED&rcl=SANITIZED&rrcfp=SANITIZED&x-expires=SANITIZED&x-signature=SANITIZED\",\"width\":2048,\"height\":2048},\"image_preview\":{\"url\":\"https://p11-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc_gen_image/9ac32b2f62a941489b0a100a57c01f57.jpeg~tplv-a9rns2rl98-i_pre_wm_15_dk.png?lk3s=SANITIZED&rcl=SANITIZED&rrcfp=SANITIZED&x-expires=SANITIZED&x-signature=SANITIZED\",\"width\":2048,\"height\":2048,\"url_formats\":{\"heic\":\"https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc_gen_image/9ac32b2f62a941489b0a100a57c01f57.jpeg~tplv-a9rns2rl98-i_pre_wm_15_dk.png?lk3s=SANITIZED&rcl=SANITIZED&rrcfp=SANITIZED&x-expires=SANITIZED&x-signature=SANITIZED\"}},\"image_ori_raw\":{\"url\":\"https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc_gen_image/9ac32b2f62a941489b0a100a57c01f57.jpeg~tplv-a9rns2rl98-image_raw.png?lk3s=SANITIZED&rcl=SANITIZED&rrcfp=SANITIZED&x-expires=SANITIZED&x-signature=SANITIZED\",\"width\":2048,\"height\":2048},\"image_preview_resize\":{\"url\":\"https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc_gen_image/9ac32b2f62a941489b0a100a57c01f57.jpeg~tplv-a9rns2rl98-img_pre_watermark_1_5_v1.png?lk3s=SANITIZED&rcl=SANITIZED&rrcfp=SANITIZED&x-expires=SANITIZED&x-signature=SANITIZED\",\"width\":2048,\"height\":2048,\"url_formats\":{\"heic\":\"https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc_gen_image/9ac32b2f62a941489b0a100a57c01f57.jpeg~tplv-a9rns2rl98-img_pre_watermark_1_5_v1.heic?lk3s=SANITIZED&rcl=SANITIZED&rrcfp=SANITIZED&x-expires=SANITIZED&x-signature=SANITIZED\"}},\"status\":2,\"placeholder\":{\"width\":2048,\"height\":2048,\"description\":\"Seedream 4.5\"},\"tips\":\"\",\"request_id\":\"eb2826650563eaeee765fbf655a5b9e442b53c023a4dec1dbc4fe5d391673099\",\"gen_params\":{\"prompt\":\"以参考图中的银发猫娘为唯一角色锚点，保持人物特征一致：银白色长卷发、猫耳、蓝色蝴蝶结、蓝眼睛、白外套猫爪印、蓝荷叶边裙、猫咪小包、企鹅伙伴，保持与参考图一致的头身比例、体型和肢体比例，不改变人物比例。让角色元气满满地举起手机自拍，俏皮吐舌，猫耳竖起，蓝蝴蝶结微微晃动，蓝眼睛闪闪发亮，嘴角上扬露出灿烂笑容，脸颊淡淡红晕；企鹅伙伴在旁边好奇探头。画面为明亮温暖的室内光线，可爱活泼，清爽柔和的二次元插画风，干净背景，方形构图，角色居中完整呈现。\",\"ratio\":\"1:1\",\"img_uri\":\"tos-cn-i-a9rns2rl98/30a08632a304445987329e60978b8f1c.jpg\",\"model\":\"\",\"img_uris\":[\"tos-cn-i-a9rns2rl98/30a08632a304445987329e60978b8f1c.jpg\"]}}}]}}},\"BlockContentForTTS\":\"\",\"BlockContentForModel\":null,\"BlockMeta\":{\"block_id\":\"40000000000000001\",\"parent_block_id\":\"\",\"is_finish\":true}},\"PacketTxtValue\":\"\",\"Ext\":null,\"CommandContent\":null},{\"PacketMeta\":null,\"BlockInfo\":{\"BlockType\":10000,\"BlockContent\":{\"block_type\":10000,\"block_id\":\"40000000000000001\",\"content\":{\"text_block\":{\"text\":\"\\n已完成，保留了原角色设定和比例，重点强化了自拍时的元气表情与室内暖光感。\"}}},\"BlockContentForTTS\":\"\",\"BlockContentForModel\":null,\"BlockMeta\":{\"block_id\":\"40000000000000001\",\"parent_block_id\":\"\",\"is_finish\":false}},\"PacketTxtValue\":\"\",\"Ext\":null,\"CommandContent\":null}]",
+            "hide_skip_think": "1",
+            "inner_app_id": "497858",
+            "inner_did": "40000000000000001",
+            "inner_log_id": "202608180918041649F6917B13C492AC48",
+            "inner_platform": "web",
+            "input_skill": "{\"skill_id\":\"3\",\"skill_type\":3,\"template_key\":\"\"}",
+            "intention": "agent_creation",
+            "is_creation_clarifying": "0",
+            "is_deep_thinking": "1",
+            "is_deep_thinking_show": "1",
+            "is_ext_update_action": "1",
+            "is_finish": "1",
+            "is_general_task": "0",
+            "llm_model_type": "38",
+            "model_id": "38",
+            "model_type": "38",
+            "need_deep_think": "0",
+            "pre_read_conv_version": "1787015887170022",
+            "read_conv_version": "1787015887170022",
+            "regen_no_replace": "1",
+            "reply_unique_key": "94ce9d33-6929-4873-af71-9108d5e195ef",
+            "review_scenario_id": "4085066754",
+            "samantha_context": "{\"query_context\":{\"ref_images\":[{\"image_token\":\"tos-cn-i-a9rns2rl98/30a08632a304445987329e60978b8f1c.jpg\",\"url\":\"\",\"identifier\":\"a59d3980-9aa2-11f1-ac18-f5487629435b\",\"refer_types\":\"\",\"review_status\":1}]}}",
+            "speaker_id": "zh_female_wenroutaozi_uranus_bigtts",
+            "tea_tags_time_cost": "{\"ack_cost_time\":\"201\",\"first_packet_cost_time\":\"2345\"}",
+            "text2image_text_finish": "1",
+            "ugc_voice_id": "104",
+            "update_version_code": "0",
+            "use_content_block": "1",
+            "use_creation": "1",
+            "use_floating_think": "1",
+            "user_creation": "{\"40000000000000001\":{\"creation_id\":\"40000000000000001\",\"private_status\":2,\"prompt\":\"以参考图中的银发猫娘为唯一角色锚点，保持人物特征一致：银白色长卷发、猫耳、蓝色蝴蝶结、蓝眼睛、白外套猫爪印、蓝荷叶边裙、猫咪小包、企鹅伙伴，保持与参考图一致的头身比例、体型和肢体比例，不改变人物比例。让角色元气满满地举起手机自拍，俏皮吐舌，猫耳竖起，蓝蝴蝶结微微晃动，蓝眼睛闪闪发亮，嘴角上扬露出灿烂笑容，脸颊淡淡红晕；企鹅伙伴在旁边好奇探头。画面为明亮温暖的室内光线，可爱活泼，清爽柔和的二次元插画风，干净背景，方形构图，角色居中完整呈现。\",\"ref_content\":\"{\\\"ref_images\\\":[{\\\"image_ori\\\":{\\\"url\\\":\\\"https://p6-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/30a08632a304445987329e60978b8f1c.jpg~tplv-a9rns2rl98-image.png?lk3s=SANITIZED&rcl=SANITIZED&rrcfp=SANITIZED&x-expires=SANITIZED&x-signature=SANITIZED\",\\\"width\\\":0,\\\"height\\\":0,\\\"uri\\\":\\\"tos-cn-i-a9rns2rl98/30a08632a304445987329e60978b8f1c.jpg\\\"},\\\"image_thumb\\\":{\\\"url\\\":\\\"https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/30a08632a304445987329e60978b8f1c.jpg~tplv-a9rns2rl98-heic.heic?lk3s=SANITIZED&rcl=SANITIZED&rrcfp=SANITIZED&x-expires=SANITIZED&x-signature=SANITIZED\",\\\"width\\\":0,\\\"height\\\":0,\\\"uri\\\":\\\"tos-cn-i-a9rns2rl98/30a08632a304445987329e60978b8f1c.jpg\\\"},\\\"key\\\":\\\"\\\",\\\"request_id\\\":\\\"\\\",\\\"preview_img\\\":{\\\"url\\\":\\\"https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/30a08632a304445987329e60978b8f1c.jpg~tplv-a9rns2rl98-image.heic?lk3s=SANITIZED&rcl=SANITIZED&rrcfp=SANITIZED&x-expires=SANITIZED&x-signature=SANITIZED\",\\\"width\\\":0,\\\"height\\\":0,\\\"uri\\\":\\\"tos-cn-i-a9rns2rl98/30a08632a304445987329e60978b8f1c.jpg\\\"},\\\"private_img\\\":{\\\"url\\\":\\\"https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/30a08632a304445987329e60978b8f1c.jpg~tplv-a9rns2rl98-private.heic?lk3s=SANITIZED&rcl=SANITIZED&rrcfp=SANITIZED&x-expires=SANITIZED&x-signature=SANITIZED\",\\\"width\\\":0,\\\"height\\\":0,\\\"uri\\\":\\\"tos-cn-i-a9rns2rl98/30a08632a304445987329e60978b8f1c.jpg\\\"}}],\\\"ref_resources\\\":[{\\\"resource_type\\\":1,\\\"image\\\":{\\\"image_ori\\\":{\\\"url\\\":\\\"https://p6-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/30a08632a304445987329e60978b8f1c.jpg~tplv-a9rns2rl98-image.png?lk3s=SANITIZED&rcl=SANITIZED&rrcfp=SANITIZED&x-expires=SANITIZED&x-signature=SANITIZED\",\\\"width\\\":0,\\\"height\\\":0,\\\"uri\\\":\\\"tos-cn-i-a9rns2rl98/30a08632a304445987329e60978b8f1c.jpg\\\"},\\\"image_thumb\\\":{\\\"url\\\":\\\"https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/30a08632a304445987329e60978b8f1c.jpg~tplv-a9rns2rl98-heic.heic?lk3s=SANITIZED&rcl=SANITIZED&rrcfp=SANITIZED&x-expires=SANITIZED&x-signature=SANITIZED\",\\\"width\\\":0,\\\"height\\\":0,\\\"uri\\\":\\\"tos-cn-i-a9rns2rl98/30a08632a304445987329e60978b8f1c.jpg\\\"},\\\"key\\\":\\\"\\\",\\\"request_id\\\":\\\"\\\",\\\"preview_img\\\":{\\\"url\\\":\\\"https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/30a08632a304445987329e60978b8f1c.jpg~tplv-a9rns2rl98-image.heic?lk3s=SANITIZED&rcl=SANITIZED&rrcfp=SANITIZED&x-expires=SANITIZED&x-signature=SANITIZED\",\\\"width\\\":0,\\\"height\\\":0,\\\"uri\\\":\\\"tos-cn-i-a9rns2rl98/30a08632a304445987329e60978b8f1c.jpg\\\"},\\\"private_img\\\":{\\\"url\\\":\\\"https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/30a08632a304445987329e60978b8f1c.jpg~tplv-a9rns2rl98-private.heic?lk3s=SANITIZED&rcl=SANITIZED&rrcfp=SANITIZED&x-expires=SANITIZED&x-signature=SANITIZED\",\\\"width\\\":0,\\\"height\\\":0,\\\"uri\\\":\\\"tos-cn-i-a9rns2rl98/30a08632a304445987329e60978b8f1c.jpg\\\"}}}]}\",\"creation_type\":5,\"material_id\":\"M40242288809305090-230273446841596\",\"aweme_anchor\":\"{\\\"anchor_id\\\":\\\"40000000000000001\\\",\\\"anchor_name\\\":\\\"AI 图片生成\\\"}\"}}"
+          },
+          "tags": [],
+          "suggest_questions": [],
+          "local_message_id": "",
+          "section_id": "40000000000000001",
+          "bot_reply_message_id": "40000000000000001",
+          "regen_msg_list": [],
+          "message_action_list": [
+            {
+              "name": "喜欢",
+              "key": "like",
+              "icon": {
+                "type": "action-like",
+                "default_url": "",
+                "active_url": ""
+              },
+              "trigger_url": "",
+              "position": "0"
+            },
+            {
+              "name": "不喜欢",
+              "key": "dislike",
+              "icon": {
+                "type": "action-dislike",
+                "default_url": "",
+                "active_url": ""
+              },
+              "trigger_url": "",
+              "position": "1"
+            }
+          ],
+          "feedback_type": 0,
+          "fetch_token": "40000000000000001",
+          "brief": "[卡片]",
+          "suggest_questions_v2": []
+        },
+        {
+          "conversation_id": "40000000000000001",
+          "message_id": "40000000000000001",
+          "message_body_version": "1",
+          "sender_id": "230273446841596",
+          "user_type": 1,
+          "status": 0,
+          "content_type": 9999,
+          "content": "",
+          "content_status": 0,
+          "index_in_conv": "2",
+          "create_time": "1787015885",
+          "sec_sender": "SANITIZED",
+          "thinking_content": "",
+          "content_block": [
+            {
+              "block_type": 10000,
+              "block_id": "54966809-ce01-4078-a0d3-c0795a68e8aa",
+              "parent_id": "",
+              "content": {
+                "text_block": {
+                  "text": "生成图片：让画面中的这个银发猫娘保持人物特征一致，元气满满再试一次自拍，俏皮吐舌、猫耳竖起，蓝蝴蝶结微微晃动，蓝眼睛闪闪发亮，嘴角上扬露出灿烂笑容，脸颊淡淡红晕，身穿白外套猫爪印和蓝荷叶边裙，背着猫咪小包，企鹅伙伴在旁边好奇探头，明亮温暖的室内光线，可爱活泼，不要改变人物比例，保持与参考图一致的头身比例、体型和肢体比例，方形 1:1 构图",
+                  "icon_url": "",
+                  "icon_url_dark": "",
+                  "summary": ""
+                },
+                "pc_event_block": ""
+              },
+              "meta_info": [],
+              "is_finish": true,
+              "append_fields": []
+            }
+          ],
+          "tts_content": "生成图片：让画面中的这个银发猫娘保持人物特征一致，元气满满再试一次自拍，俏皮吐舌、猫耳竖起，蓝蝴蝶结微微晃动，蓝眼睛闪闪发亮，嘴角上扬露出灿烂笑容，脸颊淡淡红晕，身穿白外套猫爪印和蓝荷叶边裙，背着猫咪小包，企鹅伙伴在旁边好奇探头，明亮温暖的室内光线，可爱活泼，不要改变人物比例，保持与参考图一致的头身比例、体型和肢体比例，方形 1:1 构图",
+          "update_time": "1787015885",
+          "receiver_id": "230273446841596",
+          "send_scene": "5",
+          "ext": {
+            "answer_with_suggest": "0",
+            "archive_state": "mask_init",
+            "bot_id": "40000000000000001",
+            "bot_source": "BotStudio",
+            "chat_ability": "{\"ability_type\":3,\"ability_param\":\"{\\\"ability_param\\\":{\\\"model\\\":\\\"Seedream 4.5\\\",\\\"ratio\\\":\\\"auto\\\"},\\\"ability_type\\\":1}\"}",
+            "chat_id": "40000000000000001",
+            "chat_next": "1",
+            "client_report_scene": "gui",
+            "collection_id": "dc0be25a-d59e-4bdb-b7e6-cd1b1ec4ba28",
+            "commerce_credit_config_enable": "0",
+            "conversation_init_option": "{\"need_ack_conversation\":true}",
+            "cot_switch": "0",
+            "group": "1787015885",
+            "inner_app_id": "497858",
+            "inner_did": "40000000000000001",
+            "inner_log_id": "202608180918041649F6917B13C492AC48",
+            "inner_platform": "web",
+            "input_skill": "{\"skill_id\":\"3\",\"skill_type\":3,\"template_key\":\"\"}",
+            "is_ai_playground": "false",
+            "is_finish": "1",
+            "llm_model_type": "38",
+            "message_from": "InputBox",
+            "model_type": "38",
+            "pre_read_conv_version": "1787015885142303",
+            "read_conv_version": "1787015885142303",
+            "reply_unique_key": "94ce9d33-6929-4873-af71-9108d5e195ef",
+            "samantha_context": "{\"query_context\":{\"ref_images\":[{\"image_token\":\"tos-cn-i-a9rns2rl98/30a08632a304445987329e60978b8f1c.jpg\",\"url\":\"\",\"identifier\":\"a59d3980-9aa2-11f1-ac18-f5487629435b\",\"refer_types\":\"\",\"review_status\":1}]}}",
+            "search_engine_type": "4",
+            "speaker_id": "zh_female_wenroutaozi_uranus_bigtts",
+            "sub_conv_firstmet_type": "1",
+            "ugc_voice_id": "104",
+            "update_version_code": "0",
+            "use_content_block": "1"
+          },
+          "tags": [],
+          "suggest_questions": [],
+          "local_message_id": "9924dfc3-fe5d-4e08-8f40-e4165a4cde3b",
+          "section_id": "40000000000000001",
+          "bot_reply_message_id": "0",
+          "regen_msg_list": [],
+          "message_action_list": [
+            {
+              "name": "喜欢",
+              "key": "like",
+              "icon": {
+                "type": "action-like",
+                "default_url": "",
+                "active_url": ""
+              },
+              "trigger_url": "",
+              "position": "0"
+            },
+            {
+              "name": "不喜欢",
+              "key": "dislike",
+              "icon": {
+                "type": "action-dislike",
+                "default_url": "",
+                "active_url": ""
+              },
+              "trigger_url": "",
+              "position": "1"
+            }
+          ],
+          "feedback_type": 0,
+          "fetch_token": "40000000000000001",
+          "suggest_questions_v2": []
+        },
+        {
+          "conversation_id": "40000000000000001",
+          "message_id": "40000000000000001",
+          "message_body_version": "1",
+          "sender_id": "230273446841596",
+          "user_type": 1,
+          "status": 0,
+          "content_type": 9999,
+          "content": "",
+          "content_status": 0,
+          "index_in_conv": "1",
+          "create_time": "1787015885",
+          "biz_content_type": "flow_nested",
+          "sec_sender": "SANITIZED",
+          "thinking_content": "",
+          "content_block": [
+            {
+              "block_type": 10052,
+              "block_id": "789d116d-4088-4a5a-b224-fef6989048f1",
+              "parent_id": "",
+              "content": {
+                "attachment_block": {
+                  "attachments": [
+                    {
+                      "type": 1,
+                      "identifier": "a59d3980-9aa2-11f1-ac18-f5487629435b",
+                      "image": {
+                        "uri": "tos-cn-i-a9rns2rl98/30a08632a304445987329e60978b8f1c.jpg",
+                        "image_thumb": {
+                          "url": "https://p11-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/30a08632a304445987329e60978b8f1c.jpg~tplv-a9rns2rl98-image.png?lk3s=SANITIZED&rcl=SANITIZED&rrcfp=SANITIZED&x-expires=SANITIZED&x-signature=SANITIZED",
+                          "width": 0,
+                          "height": 0,
+                          "format": "",
+                          "url_formats": {}
+                        },
+                        "image_ori": {
+                          "url": "https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/30a08632a304445987329e60978b8f1c.jpg~tplv-a9rns2rl98-image.png?lk3s=SANITIZED&rcl=SANITIZED&rrcfp=SANITIZED&x-expires=SANITIZED&x-signature=SANITIZED",
+                          "width": 1199,
+                          "height": 1312,
+                          "format": "",
+                          "url_formats": {}
+                        },
+                        "image_preview": {
+                          "url": "https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/30a08632a304445987329e60978b8f1c.jpg~tplv-a9rns2rl98-image.png?lk3s=SANITIZED&rcl=SANITIZED&rrcfp=SANITIZED&x-expires=SANITIZED&x-signature=SANITIZED",
+                          "width": 0,
+                          "height": 0,
+                          "format": "",
+                          "url_formats": {}
+                        },
+                        "name": "img_1787015848008_zoi2he.jpg"
+                      },
+                      "review_state": 1,
+                      "parse_state": 0,
+                      "progress": 100,
+                      "upload_status": 1,
+                      "src": ""
+                    }
+                  ]
+                },
+                "pc_event_block": ""
+              },
+              "meta_info": [],
+              "is_finish": true,
+              "append_fields": []
+            }
+          ],
+          "tts_content": "{\"entities\":[{\"entity_type\":2,\"entity_content\":{\"image\":{\"key\":\"tos-cn-i-a9rns2rl98/30a08632a304445987329e60978b8f1c.jpg\",\"image_thumb\":null,\"image_ori\":{\"url\":\"https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/30a08632a304445987329e60978b8f1c.jpg~tplv-a9rns2rl98-image.png?lk3s=SANITIZED&rcl=SANITIZED&rrcfp=SANITIZED&x-expires=SANITIZED&x-signature=SANITIZED\",\"format\":\"\",\"width\":1199,\"height\":1312},\"image_raw\":null,\"preview_img\":null,\"identifier\":\"a59d3980-9aa2-11f1-ac18-f5487629435b\",\"resource_id\":null}},\"identifier\":\"a59d3980-9aa2-11f1-ac18-f5487629435b\",\"file_name_state\":1,\"file_parse_state\":0}],\"text\":\"\"}",
+          "update_time": "1787015885",
+          "receiver_id": "230273446841596",
+          "send_scene": "5",
+          "ext": {
+            "answer_with_suggest": "0",
+            "archive_state": "mask_init",
+            "biz_content_type": "flow_nested",
+            "bot_id": "40000000000000001",
+            "bot_source": "BotStudio",
+            "chat_ability": "{\"ability_type\":3,\"ability_param\":\"{\\\"ability_param\\\":{\\\"model\\\":\\\"Seedream 4.5\\\",\\\"ratio\\\":\\\"auto\\\"},\\\"ability_type\\\":1}\"}",
+            "chat_id": "40000000000000001",
+            "chat_next": "1",
+            "client_report_scene": "gui",
+            "collection_id": "dc0be25a-d59e-4bdb-b7e6-cd1b1ec4ba28",
+            "commerce_credit_config_enable": "0",
+            "conversation_init_option": "{\"need_ack_conversation\":true}",
+            "cot_switch": "0",
+            "group": "1787015885",
+            "inner_app_id": "497858",
+            "inner_did": "40000000000000001",
+            "inner_log_id": "202608180918041649F6917B13C492AC48",
+            "inner_platform": "web",
+            "input_skill": "{\"skill_id\":\"3\",\"skill_type\":3,\"template_key\":\"\"}",
+            "is_ai_playground": "false",
+            "is_finish": "1",
+            "llm_model_type": "38",
+            "message_from": "InputBox",
+            "model_type": "38",
+            "pre_read_conv_version": "1787015885064329",
+            "read_conv_version": "1787015885064329",
+            "reply_unique_key": "94ce9d33-6929-4873-af71-9108d5e195ef",
+            "samantha_context": "{\"query_context\":{\"ref_images\":[{\"image_token\":\"tos-cn-i-a9rns2rl98/30a08632a304445987329e60978b8f1c.jpg\",\"url\":\"\",\"identifier\":\"a59d3980-9aa2-11f1-ac18-f5487629435b\",\"refer_types\":\"\",\"review_status\":1}]}}",
+            "search_engine_type": "4",
+            "speaker_id": "zh_female_wenroutaozi_uranus_bigtts",
+            "sub_conv_firstmet_type": "1",
+            "ugc_voice_id": "104",
+            "update_version_code": "0",
+            "use_content_block": "1"
+          },
+          "tags": [],
+          "suggest_questions": [],
+          "local_message_id": "a59c2810-9aa2-11f1-ac18-f5487629435b",
+          "section_id": "40000000000000001",
+          "bot_reply_message_id": "0",
+          "regen_msg_list": [],
+          "message_action_list": [
+            {
+              "name": "喜欢",
+              "key": "like",
+              "icon": {
+                "type": "action-like",
+                "default_url": "",
+                "active_url": ""
+              },
+              "trigger_url": "",
+              "position": "0"
+            },
+            {
+              "name": "不喜欢",
+              "key": "dislike",
+              "icon": {
+                "type": "action-dislike",
+                "default_url": "",
+                "active_url": ""
+              },
+              "trigger_url": "",
+              "position": "1"
+            }
+          ],
+          "feedback_type": 0,
+          "fetch_token": "40000000000000001",
+          "suggest_questions_v2": []
+        }
+      ],
+      "has_more": false,
+      "regen_messages": {},
+      "msg_cursor": "1"
+    }
+  },
+  "version": "1",
+  "status_code": 0,
+  "status_desc": "OK",
+  "ext": {
+    "tt_stable": "1"
+  }
+}
