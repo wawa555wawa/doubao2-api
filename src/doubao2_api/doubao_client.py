@@ -33,6 +33,10 @@ BASE_QUERY = (
 )
 COMPLETION_URL = f"https://www.doubao.com/chat/completion?{BASE_QUERY}"
 CHAIN_SINGLE_URL = f"https://www.doubao.com/im/chain/single?{BASE_QUERY}"
+PREPARE_UPLOAD_URL = f"https://www.doubao.com/alice/resource/prepare_upload?{BASE_QUERY}"
+APPLY_UPLOAD_URL = "https://www.doubao.com/top/v1"
+COMMIT_UPLOAD_URL = "https://www.doubao.com/top/v1"
+PRE_HANDLE_URL = f"https://www.doubao.com/alice/message/pre_handle_v2_without_conv?{BASE_QUERY}"
 BOT_ID = "7338286299411103781"
 USER_AGENT = (
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
@@ -220,13 +224,106 @@ class DoubaoClient:
         n: int = 1,
         reference_images: list[bytes] | None = None,
     ) -> list[str]:
-        if reference_images:
-            raise NotImplementedError("图生图上传在 Task 5 实现")
+        attachments: list[dict] = []
         async with httpx.AsyncClient(cookies=self._store.cookies, timeout=60) as client:
-            body = build_completion_body(prompt, size_to_ratio(size))
+            for img in reference_images or []:
+                attachments.append(await self._upload(client, img))
+            body = build_completion_body(prompt, size_to_ratio(size), attachments or None)
             conversation_id = await self._send(client, body)
             urls = await self._poll(client, conversation_id)
         return urls[:n]
+
+    async def _upload(self, client: httpx.AsyncClient, image: bytes) -> dict:
+        # 1. prepare
+        resp = await client.post(
+            PREPARE_UPLOAD_URL,
+            headers=self._headers(),
+            json={"tenant_id": "5", "scene_id": "5", "resource_type": 2},
+        )
+        data = resp.json()
+        service_id = data["data"]["service_id"]
+
+        # 2. apply（GET /top/v1?Action=ApplyImageUpload...）
+        resp = await client.get(
+            APPLY_UPLOAD_URL,
+            headers=self._headers(),
+            params={
+                "Action": "ApplyImageUpload",
+                "Version": "2018-08-01",
+                "ServiceId": service_id,
+                "NeedFallback": "true",
+                "FileSize": str(len(image)),
+                "FileExtension": ".png",
+            },
+        )
+        payload = resp.json()
+        address = payload["Result"]["UploadAddress"]
+        store_info = address["StoreInfos"][0]
+        store_uri = store_info["StoreUri"]
+        upload_host = address["UploadHosts"][0]
+        session_key = address["SessionKey"]
+
+        # 3. PUT 二进制
+        resp = await client.put(
+            f"https://{upload_host}/{store_uri}",
+            headers={"Authorization": store_info["Auth"], "Content-Type": "application/octet-stream"},
+            content=image,
+        )
+        resp.raise_for_status()
+
+        # 4. commit
+        resp = await client.post(
+            COMMIT_UPLOAD_URL,
+            headers=self._headers(),
+            params={
+                "Action": "CommitImageUpload",
+                "Version": "2018-08-01",
+                "ServiceId": service_id,
+            },
+            json={"SessionKey": session_key},
+        )
+        payload = resp.json()
+        result = payload["Result"]
+        uri = result["Results"][0]["Uri"]
+        plugin = (result.get("PluginResult") or [{}])[0]
+        width = plugin.get("ImageWidth") or 0
+        height = plugin.get("ImageHeight") or 0
+
+        # 5. pre_handle（注册附件实体）
+        identifier = str(uuid.uuid1())
+        resp = await client.post(
+            PRE_HANDLE_URL,
+            headers=self._headers(),
+            json={
+                "uplink_entity": {
+                    "entity_type": 2,
+                    "entity_content": {"image": {"key": uri}},
+                    "identifier": identifier,
+                },
+                "bot_id": BOT_ID,
+                "local_message_id": str(uuid.uuid1()),
+            },
+        )
+        payload = resp.json()
+        if payload.get("code") != 0:
+            if payload.get("code") == AUTH_EXPIRED_CODE:
+                raise AuthExpired("登录已过期")
+            raise GenerationFailed(f"附件注册失败: {payload}")
+
+        return {
+            "type": 1,
+            "identifier": identifier,
+            "image": {
+                "name": "reference.png",
+                "uri": uri,
+                "image_ori": {"url": "", "width": width, "height": height, "format": "", "url_formats": {}},
+            },
+            "parse_state": 0,
+            "review_state": 1,
+            "upload_status": 1,
+            "progress": 100,
+            "src": "",
+        }
 
     async def _send(self, client: httpx.AsyncClient, body: dict) -> str:
         async with client.stream(
