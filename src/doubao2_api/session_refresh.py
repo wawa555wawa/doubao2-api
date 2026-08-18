@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import time
 from urllib.parse import parse_qs, urlparse
 
@@ -36,11 +37,10 @@ def refresh_credentials(
 
     def on_response(response) -> None:
         nonlocal device
-        if device or "doubao.com" not in response.url:
+        if "doubao.com" not in response.url:
             return
-        found = extract_device_params(response.url)
-        if found:
-            device = found
+        for key, value in extract_device_params(response.url).items():
+            device.setdefault(key, value)
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=headless)
@@ -53,6 +53,19 @@ def refresh_credentials(
             while time.monotonic() < deadline:
                 found = extract_login_cookies(context.cookies())
                 if found is not None:
+                    # 登录成功后页面还会继续发带 device_id 的请求，多等几秒收集；
+                    # 兜底：device_id 也存在于 localStorage 的 samantha_web_web_id。
+                    page.wait_for_timeout(5000)
+                    if not device.get("device_id"):
+                        try:
+                            raw = page.evaluate(
+                                "localStorage.getItem('samantha_web_web_id')"
+                            )
+                            fallback = (json.loads(raw or "{}") or {}).get("web_id")
+                            if fallback:
+                                device["device_id"] = str(fallback)
+                        except Exception:
+                            pass
                     store.save(found, device=device or None)
                     return
                 page.wait_for_timeout(2000)
