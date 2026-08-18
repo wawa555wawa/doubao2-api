@@ -1,0 +1,104 @@
+{
+  "client_meta": {
+    "local_conversation_id": "local_1405350106199187",
+    "conversation_id": "",
+    "bot_id": "7338286299411103781",
+    "last_section_id": "",
+    "last_message_index": null
+  },
+  "messages": [
+    {
+      "local_message_id": "d6d62d20-9ab3-11f1-aded-1dacd4ab6b0c",
+      "content_block": [
+        {
+          "block_type": 10000,
+          "content": {
+            "text_block": {
+              "text": "生成图片：一只在月球上的猫",
+              "icon_url": "",
+              "icon_url_dark": "",
+              "summary": ""
+            },
+            "pc_event_block": ""
+          },
+          "block_id": "936a9aa4-aee1-45ab-9a45-430db6a3ecf2",
+          "parent_id": "",
+          "meta_info": [],
+          "append_fields": []
+        }
+      ],
+      "message_status": 0
+    }
+  ],
+  "option": {
+    "send_message_scene": "",
+    "create_time_ms": 1787023261951,
+    "collect_id": "",
+    "is_audio": false,
+    "answer_with_suggest": false,
+    "tts_switch": false,
+    "need_deep_think": 0,
+    "click_clear_context": false,
+    "from_suggest": false,
+    "is_regen": false,
+    "is_replace": false,
+    "is_from_click_option": false,
+    "is_from_click_softlink": false,
+    "disable_sse_cache": false,
+    "select_text_action": "",
+    "is_select_text": false,
+    "resend_for_regen": false,
+    "scene_type": 0,
+    "unique_key": "2bc0aad7-bfcd-4ea3-95a9-983d9668fc3c",
+    "start_seq": 0,
+    "need_create_conversation": true,
+    "conversation_init_option": {
+      "need_ack_conversation": true
+    },
+    "regen_query_id": [],
+    "edit_query_id": [],
+    "regen_instruction": "",
+    "no_replace_for_regen": false,
+    "message_from": 0,
+    "shared_app_name": "",
+    "shared_app_id": "",
+    "sse_recv_event_options": {
+      "support_chunk_delta": true
+    },
+    "is_ai_playground": false,
+    "is_old_user": true,
+    "recovery_option": {
+      "is_recovery": false,
+      "req_create_time_sec": 1787023261,
+      "append_sse_event_scene": 0
+    },
+    "message_storage_type": 0,
+    "related_deleted_message_ids": {},
+    "connector_info_list": [],
+    "model_config": {
+      "model_item_key": "",
+      "model_extra_params": {}
+    },
+    "aggregate_params": {
+      "conversation_mode": "",
+      "mode_id": "",
+      "model_item_key": "",
+      "agent_mode": "",
+      "reasoning_effort": "",
+      "provider_id": ""
+    }
+  },
+  "chat_ability": {
+    "ability_type": 3,
+    "ability_param": "{\"ability_param\":{\"model\":\"Seedream 4.5\",\"ratio\":\"auto\"},\"ability_type\":1}"
+  },
+  "user_context": [],
+  "ext": {
+    "answer_with_suggest": "0",
+    "sub_conv_firstmet_type": "1",
+    "collection_id": "",
+    "is_finish": "1",
+    "conversation_init_option": "{\"need_ack_conversation\":true}",
+    "commerce_credit_config_enable": "0"
+  }
+}
