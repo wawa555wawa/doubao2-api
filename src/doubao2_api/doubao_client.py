@@ -77,17 +77,28 @@ def parse_sse_events(text: str) -> list[tuple[str, dict]]:
     return events
 
 
-def build_completion_body(prompt: str, ratio: str, attachments: list[dict] | None = None) -> dict:
+def build_completion_body(
+    prompt: str,
+    ratio: str,
+    attachments: list[dict] | None = None,
+    attachment_local_message_ids: list[str] | None = None,
+) -> dict:
+    # attachment_local_message_ids[i] 对应 attachments[i]：抓包确认每个附件消息的
+    # local_message_id 必须与该附件 pre_handle 请求体中的 local_message_id 一致。
     messages: list[dict] = []
-    if attachments:
+    for i, attachment in enumerate(attachments or []):
+        if attachment_local_message_ids is not None:
+            local_message_id = attachment_local_message_ids[i]
+        else:
+            local_message_id = str(uuid.uuid1())
         messages.append(
             {
-                "local_message_id": str(uuid.uuid1()),
+                "local_message_id": local_message_id,
                 "content_block": [
                     {
                         "block_type": 10052,
                         "content": {
-                            "attachment_block": {"attachments": attachments},
+                            "attachment_block": {"attachments": [attachment]},
                             "pc_event_block": "",
                         },
                         "block_id": str(uuid.uuid4()),
@@ -225,15 +236,27 @@ class DoubaoClient:
         reference_images: list[bytes] | None = None,
     ) -> list[str]:
         attachments: list[dict] = []
+        attachment_local_message_ids: list[str] = []
         async with httpx.AsyncClient(cookies=self._store.cookies, timeout=60) as client:
             for img in reference_images or []:
-                attachments.append(await self._upload(client, img))
-            body = build_completion_body(prompt, size_to_ratio(size), attachments or None)
+                attachment, local_message_id = await self._upload(client, img)
+                attachments.append(attachment)
+                attachment_local_message_ids.append(local_message_id)
+            body = build_completion_body(
+                prompt,
+                size_to_ratio(size),
+                attachments or None,
+                attachment_local_message_ids or None,
+            )
             conversation_id = await self._send(client, body)
             urls = await self._poll(client, conversation_id)
         return urls[:n]
 
-    async def _upload(self, client: httpx.AsyncClient, image: bytes) -> dict:
+    async def _upload(self, client: httpx.AsyncClient, image: bytes) -> tuple[dict, str]:
+        """上传单张参考图，返回 (附件字典, pre_handle 用的 local_message_id)。
+
+        抓包确认：附件消息的 local_message_id 必须与 pre_handle 请求体中的一致。
+        """
         # 1. prepare
         resp = await client.post(
             PREPARE_UPLOAD_URL,
@@ -291,6 +314,7 @@ class DoubaoClient:
 
         # 5. pre_handle（注册附件实体）
         identifier = str(uuid.uuid1())
+        local_message_id = str(uuid.uuid1())
         resp = await client.post(
             PRE_HANDLE_URL,
             headers=self._headers(),
@@ -301,7 +325,7 @@ class DoubaoClient:
                     "identifier": identifier,
                 },
                 "bot_id": BOT_ID,
-                "local_message_id": str(uuid.uuid1()),
+                "local_message_id": local_message_id,
             },
         )
         payload = resp.json()
@@ -310,7 +334,7 @@ class DoubaoClient:
                 raise AuthExpired("登录已过期")
             raise GenerationFailed(f"附件注册失败: {payload}")
 
-        return {
+        attachment = {
             "type": 1,
             "identifier": identifier,
             "image": {
@@ -324,6 +348,7 @@ class DoubaoClient:
             "progress": 100,
             "src": "",
         }
+        return attachment, local_message_id
 
     async def _send(self, client: httpx.AsyncClient, body: dict) -> str:
         async with client.stream(

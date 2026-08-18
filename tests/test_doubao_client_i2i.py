@@ -35,10 +35,10 @@ async def test_generate_with_reference_image(tmp_path):
     respx.post(url__startswith=dc.COMMIT_UPLOAD_URL).mock(
         return_value=httpx.Response(200, json=load_fixture("commit_upload_success.json"))
     )
-    respx.post(dc.PRE_HANDLE_URL).mock(
+    pre_handle_route = respx.post(dc.PRE_HANDLE_URL).mock(
         return_value=httpx.Response(200, json=load_fixture("pre_handle_success.json"))
     )
-    respx.post(dc.COMPLETION_URL).mock(
+    completion_route = respx.post(dc.COMPLETION_URL).mock(
         return_value=httpx.Response(
             200,
             text=load_text_fixture("sse_success.txt"),
@@ -58,3 +58,16 @@ async def test_generate_with_reference_image(tmp_path):
     assert put_route.called
     assert put_route.calls[0].request.content == PNG_BYTES
     assert urls  # 走到轮询并取到图
+
+    # 附件消息：block_type 10052 attachment_block，image.uri 来自 commit 响应
+    completion_body = json.loads(completion_route.calls[0].request.content)
+    attachment_msg = completion_body["messages"][0]
+    block = attachment_msg["content_block"][0]
+    assert block["block_type"] == 10052
+    commit_fixture = load_fixture("commit_upload_success.json")
+    expected_uri = commit_fixture["Result"]["Results"][0]["Uri"]
+    assert block["content"]["attachment_block"]["attachments"][0]["image"]["uri"] == expected_uri
+
+    # I-2：附件消息的 local_message_id 必须与 pre_handle 请求体中的一致
+    pre_handle_body = json.loads(pre_handle_route.calls[0].request.content)
+    assert attachment_msg["local_message_id"] == pre_handle_body["local_message_id"]
