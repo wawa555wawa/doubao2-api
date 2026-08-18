@@ -3,10 +3,9 @@ event: SSE_HEARTBEAT
 data: {}
 
 id: 0
-event: STREAM_ERROR
-data: {"error_code":710022004,"error_msg":"rate limited","extra":{"decision":"{\"code\":\"10000\",\"from\":\"shark_admin\",\"version\":\"\",\"type\":\"verify\",\"region\":\"cn\",\"subtype\":\"slide\",\"detail\":\"01PloWVDxlElnqT5B8SWTq9xdLtbdp5hFoJ-gtQ3z-NZr9Xdb0JphgkhLRY7pFdo4faJzSkLG0lz2B-P7w-iuujW*atkh2WflL9cHhvrP0C7ShR4lSrWq3uhUg-tnzoveXZls8dRe06fd3Q02SNSDF05KSqH9I-BsPYU0wXdX8qizEk4ffm*onZCVKb3sYhM7*Y2MdbC-tyGgjBXWXxE7UGxGmtK1PBFcylM0N7FX0WGI64c3sbDR09LUuKnQE2dJigS-b9UymQShepytptv4EtdBEL8k5Djx7n8oC8unTAufhlmioFUHhvk8RLUlWi6n43a*xUzsOSx8GNKCmYHDKQJNAOQOyW-9nPNcYXGbbX82ew.\",\"server_sdk_env\":\"{\\\"idc\\\":\\\"hl\\\",\\\"region\\\":\\\"CN\\\",\\\"server_type\\\":\\\"business\\\"}\",\"log_id\":\"2026081811291240F9B64F6C8FAABDD343\",\"verify_scene\":\"doubao_message_web\"}","ack":"1"}}
+event: DOWNLINK_CMD
+data: {"cmd":50080,"sequence_id":"40000000000000001","downlink_body":{"pull_msg_notify":{"conversation_id":"40000000000000001","message_index":"1","limit":2}},"version":"1"}
 
 id: 1
 event: SSE_REPLY_END
 data: {"end_type":3}
-
