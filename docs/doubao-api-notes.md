@@ -109,7 +109,7 @@
    请求体：`{"SessionKey": "<base64 JSON，含 storeInfos/StoreUri+Auth、uploadHost、uri>"}`——网页版直接复用第 2 步返回里的 SessionKey 结构（见抓包 `0258-v1.json` 的请求体）。
    响应：`Result.Results[0].Uri` = StoreUri；`Result.PluginResult[0]` 含图片元信息（宽/高）。
    fixture：`commit_upload_success.json`
-5. **`POST /alice/message/pre_handle_v2_without_conv`**（Content-Type: `application/json; encoding=utf-8`）
+5. **`POST /alice/message/pre_handle_v2_without_conv`**（Content-Type: 标准 `application/json`，抓包确认）
    请求体：`{"uplink_entity":{"entity_type":2,"entity_content":{"image":{"key":"<StoreUri>"}},"identifier":"<uuid1>"},"bot_id":"7338286299411103781","local_message_id":"<uuid1>"}`
    响应：`{"code":0,"data":{"pre_generate_id":"..."}}`。其中 `identifier`/`local_message_id` 需与随后 §提交任务 附件消息中的 `identifier`/`local_message_id` 一致。
    fixture：`pre_handle_success.json`
