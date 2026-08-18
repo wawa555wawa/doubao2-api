@@ -1,0 +1,101 @@
+#!/usr/bin/env python3
+"""豆包网页版抓包辅助脚本。
+
+用法：
+    .venv/bin/python tools/capture_doubao.py
+
+脚本会打开一个 Chromium 窗口（登录态持久化在 .superpowers/browser-profile/，
+首次使用需扫码登录一次）。在窗口里正常操作豆包生成图片，页面产生的所有
+fetch/XHR 请求与响应会记录到 .superpowers/capture/ 下，每个请求一个 JSON 文件。
+
+操作完毕后回到终端按回车结束抓包。
+
+注意：抓包文件包含 Cookie 等敏感信息，仅保存在本地，不要分享、不要提交 git。
+"""
+
+from __future__ import annotations
+
+import json
+import re
+import sys
+import time
+from pathlib import Path
+
+from playwright.sync_api import sync_playwright
+
+CAPTURE_DIR = Path(".superpowers/capture")
+PROFILE_DIR = Path(".superpowers/browser-profile")
+TARGET_URL = "https://www.doubao.com/chat/"
+
+MAX_BODY_CHARS = 500_000
+
+
+def sanitize(name: str) -> str:
+    return re.sub(r"[^A-Za-z0-9._-]+", "_", name)[-80:]
+
+
+def main() -> None:
+    CAPTURE_DIR.mkdir(parents=True, exist_ok=True)
+    session_dir = CAPTURE_DIR / time.strftime("%Y%m%d-%H%M%S")
+    session_dir.mkdir()
+    print(f"抓包文件将保存到: {session_dir}")
+
+    counter = 0
+
+    def on_response(response) -> None:
+        nonlocal counter
+        request = response.request
+        if request.resource_type not in ("xhr", "fetch"):
+            return
+        counter += 1
+        seq = counter
+        try:
+            body = response.json()
+        except Exception:
+            try:
+                body = response.text()
+            except Exception:
+                body = None
+        if isinstance(body, str) and len(body) > MAX_BODY_CHARS:
+            body = body[:MAX_BODY_CHARS] + "...[truncated]"
+        record = {
+            "seq": seq,
+            "method": request.method,
+            "url": response.url,
+            "status": response.status,
+            "request_headers": dict(request.headers),
+            "request_post_data": request.post_data,
+            "response_body": body,
+        }
+        path = session_dir / f"{seq:04d}-{sanitize(response.url.split('/')[-1].split('?')[0] or 'root')}.json"
+        path.write_text(json.dumps(record, ensure_ascii=False, indent=2), encoding="utf-8")
+        print(f"  [{seq:04d}] {request.method} {response.status} {response.url[:120]}")
+
+    with sync_playwright() as p:
+        context = p.chromium.launch_persistent_context(
+            user_data_dir=str(PROFILE_DIR),
+            headless=False,
+            viewport={"width": 1400, "height": 900},
+        )
+        page = context.pages[0] if context.pages else context.new_page()
+        page.on("response", on_response)
+        page.goto(TARGET_URL)
+
+        print()
+        print("浏览器已打开。请：")
+        print("  1. 如未登录，先扫码登录")
+        print("  2. 发一个文生图请求（例如：一只在月球上的猫），等图片生成完毕")
+        print("  3. 上传一张参考图 + 提示词（例如：改成油画风），等图片生成完毕")
+        print("  4. 回到本终端按回车结束")
+        print()
+        try:
+            input("按回车结束抓包...")
+        except (EOFError, KeyboardInterrupt):
+            pass
+        context.close()
+
+    print(f"共记录 {counter} 个请求，保存在 {session_dir}")
+
+
+if __name__ == "__main__":
+    sys.exit(main())
