@@ -124,6 +124,44 @@ def main() -> None:
             # 禁用 Service Worker，迫使页面把 IM WebSocket 建在页面上下文里，才能被捕获
             service_workers="block",
         )
+        # 拦截 fetch/XHR 调用参数（上传二进制走的是流式 body，网络事件抓不到，只能从 JS 层钩）
+        context.add_init_script(
+            """
+(() => {
+  const log = (rec) => { window.__uploadLog = window.__uploadLog || []; window.__uploadLog.push(rec); };
+  const match = (u) => /snssdk|bytedancevod|tos-/.test(u || "");
+  const of = window.fetch;
+  window.fetch = function (input, init) {
+    try {
+      const url = typeof input === "string" ? input : input.url;
+      if (match(url)) {
+        const headers = {};
+        const h = (init && init.headers) || (typeof input !== "string" ? input.headers : null);
+        if (h) new Headers(h).forEach((v, k) => (headers[k] = v));
+        const body = init && init.body;
+        log({ kind: "fetch", method: (init && init.method) || (typeof input !== "string" ? input.method : "GET"),
+              url, headers, bodyType: body ? body.constructor.name : null,
+              bodySize: body && body.size != null ? body.size : null });
+      }
+    } catch (e) {}
+    return of.apply(this, arguments);
+  };
+  const oopen = XMLHttpRequest.prototype.open;
+  const oset = XMLHttpRequest.prototype.setRequestHeader;
+  const osend = XMLHttpRequest.prototype.send;
+  XMLHttpRequest.prototype.open = function (method, url) { this.__rec = { kind: "xhr", method, url }; return oopen.apply(this, arguments); };
+  XMLHttpRequest.prototype.setRequestHeader = function (k, v) { if (this.__rec) { (this.__rec.headers = this.__rec.headers || {})[k] = v; } return oset.apply(this, arguments); };
+  XMLHttpRequest.prototype.send = function (body) {
+    if (this.__rec && match(this.__rec.url)) {
+      this.__rec.bodyType = body ? body.constructor.name : null;
+      this.__rec.bodySize = body && body.size != null ? body.size : null;
+      log(this.__rec);
+    }
+    return osend.apply(this, arguments);
+  };
+})();
+"""
+        )
         page = context.pages[0] if context.pages else context.new_page()
         # 监听挂在 context 上，覆盖所有标签页（包括新生成的会话页）
         context.on("response", on_response)
@@ -154,6 +192,17 @@ def main() -> None:
             record["response_body"] = body
             write_record(name, record)
             print(f"  SSE 响应体已补录: [{record['seq']:04d}] {record['url'][:100]}")
+
+        # 收集各页面 JS 钩子记录的上传调用
+        for pg in context.pages:
+            try:
+                upload_log = pg.evaluate("window.__uploadLog || []")
+            except Exception:
+                continue
+            if upload_log:
+                path = session_dir / "upload-calls.json"
+                path.write_text(json.dumps(upload_log, ensure_ascii=False, indent=2), encoding="utf-8")
+                print(f"  上传调用记录已保存: {path}（{len(upload_log)} 条）")
 
         context.close()
 
