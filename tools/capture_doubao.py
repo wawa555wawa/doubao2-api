@@ -57,15 +57,21 @@ def main() -> None:
         if request.resource_type not in ("xhr", "fetch"):
             return
         seq = next_seq()
+        body_error = None
         try:
             body = response.json()
         except Exception:
             try:
                 body = response.text()
-            except Exception:
+            except Exception as exc:
                 body = None
+                body_error = f"{type(exc).__name__}: {exc}"
         if isinstance(body, str) and len(body) > MAX_BODY_CHARS:
             body = body[:MAX_BODY_CHARS] + "...[truncated]"
+        try:
+            response_headers = dict(response.headers)
+        except Exception:
+            response_headers = {}
         record = {
             "seq": seq,
             "kind": "http",
@@ -74,7 +80,9 @@ def main() -> None:
             "status": response.status,
             "request_headers": dict(request.headers),
             "request_post_data": request.post_data,
+            "response_headers": response_headers,
             "response_body": body,
+            "body_error": body_error,
         }
         write_record(sanitize(response.url.split("/")[-1].split("?")[0] or "root"), record)
         print(f"  [{seq:04d}] {request.method} {response.status} {response.url[:120]}")
@@ -110,8 +118,9 @@ def main() -> None:
             service_workers="block",
         )
         page = context.pages[0] if context.pages else context.new_page()
-        page.on("response", on_response)
-        page.on("websocket", on_websocket)
+        # 监听挂在 context 上，覆盖所有标签页（包括新生成的会话页）
+        context.on("response", on_response)
+        context.on("websocket", on_websocket)
         page.goto(TARGET_URL)
 
         print()
