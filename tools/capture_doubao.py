@@ -15,6 +15,7 @@ fetch/XHR 请求与响应会记录到 .superpowers/capture/ 下，每个请求�
 
 from __future__ import annotations
 
+import base64
 import json
 import re
 import sys
@@ -42,13 +43,20 @@ def main() -> None:
 
     counter = 0
 
-    def on_response(response) -> None:
+    def next_seq() -> int:
         nonlocal counter
+        counter += 1
+        return counter
+
+    def write_record(name: str, record: dict) -> None:
+        path = session_dir / f"{record['seq']:04d}-{name}.json"
+        path.write_text(json.dumps(record, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    def on_response(response) -> None:
         request = response.request
         if request.resource_type not in ("xhr", "fetch"):
             return
-        counter += 1
-        seq = counter
+        seq = next_seq()
         try:
             body = response.json()
         except Exception:
@@ -60,6 +68,7 @@ def main() -> None:
             body = body[:MAX_BODY_CHARS] + "...[truncated]"
         record = {
             "seq": seq,
+            "kind": "http",
             "method": request.method,
             "url": response.url,
             "status": response.status,
@@ -67,9 +76,30 @@ def main() -> None:
             "request_post_data": request.post_data,
             "response_body": body,
         }
-        path = session_dir / f"{seq:04d}-{sanitize(response.url.split('/')[-1].split('?')[0] or 'root')}.json"
-        path.write_text(json.dumps(record, ensure_ascii=False, indent=2), encoding="utf-8")
+        write_record(sanitize(response.url.split("/")[-1].split("?")[0] or "root"), record)
         print(f"  [{seq:04d}] {request.method} {response.status} {response.url[:120]}")
+
+    def on_websocket(ws) -> None:
+        seq = next_seq()
+        frames: list[dict] = []
+        record = {"seq": seq, "kind": "websocket", "url": ws.url, "frames": frames}
+        open_ws.append(record)
+        print(f"  [{seq:04d}] WebSocket 连接: {ws.url[:120]}")
+
+        def on_frame(direction: str, payload) -> None:
+            if isinstance(payload, bytes):
+                data = {"encoding": "base64", "data": base64.b64encode(payload).decode("ascii")}
+                preview_len = len(payload)
+            else:
+                data = {"encoding": "text", "data": payload[:MAX_BODY_CHARS]}
+                preview_len = len(payload)
+            frames.append({"time": time.time(), "direction": direction, **data})
+            print(f"       ws-{direction} {preview_len}B {ws.url[:80]}")
+
+        ws.on("framesent", lambda payload: on_frame("sent", payload))
+        ws.on("framereceived", lambda payload: on_frame("received", payload))
+
+    open_ws: list[dict] = []
 
     with sync_playwright() as p:
         context = p.chromium.launch_persistent_context(
@@ -79,6 +109,7 @@ def main() -> None:
         )
         page = context.pages[0] if context.pages else context.new_page()
         page.on("response", on_response)
+        page.on("websocket", on_websocket)
         page.goto(TARGET_URL)
 
         print()
@@ -94,7 +125,9 @@ def main() -> None:
             pass
         context.close()
 
-    print(f"共记录 {counter} 个请求，保存在 {session_dir}")
+    for record in open_ws:
+        write_record("websocket", record)
+    print(f"共记录 {counter} 条（含 {len(open_ws)} 条 WebSocket），保存在 {session_dir}")
 
 
 if __name__ == "__main__":
