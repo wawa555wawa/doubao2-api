@@ -106,6 +106,8 @@ def main() -> None:
             user_data_dir=str(PROFILE_DIR),
             headless=False,
             viewport={"width": 1400, "height": 900},
+            # 禁用 Service Worker，迫使页面把 IM WebSocket 建在页面上下文里，才能被捕获
+            service_workers="block",
         )
         page = context.pages[0] if context.pages else context.new_page()
         page.on("response", on_response)
