@@ -34,12 +34,12 @@ doubao2-api login
 doubao2-api serve
 ```
 
-默认监听 `http://127.0.0.1:8000`。环境变量配置（可用 `.env`）：
+默认监听 `http://127.0.0.1:9756`。环境变量配置（可用 `.env`）：
 
 | 变量 | 默认值 | 说明 |
 | --- | --- | --- |
 | `HOST` | `127.0.0.1` | 监听地址 |
-| `PORT` | `8000` | 监听端口 |
+| `PORT` | `9756` | 监听端口 |
 | `DATA_DIR` | `data` | 凭证与生成图片的存放目录 |
 | `GENERATION_TIMEOUT` | `120` | 单个生图任务的轮询超时（秒） |
 | `LOGIN_TIMEOUT` | `180` | 自动扫码续期的等待超时（秒） |
@@ -51,7 +51,7 @@ doubao2-api serve
 文生图（`response_format=url` 返回轻量 JSON；默认是 `b64_json`）：
 
 ```bash
-curl -s http://127.0.0.1:8000/v1/images/generations \
+curl -s http://127.0.0.1:9756/v1/images/generations \
   -H 'Content-Type: application/json' \
   -d '{"prompt":"一只月球上的猫","size":"1024x1024","n":2,"response_format":"url"}'
 ```
@@ -60,8 +60,8 @@ curl -s http://127.0.0.1:8000/v1/images/generations \
 {
   "created": 1787030000,
   "data": [
-    {"url": "http://127.0.0.1:8000/images/ab12....png"},
-    {"url": "http://127.0.0.1:8000/images/cd34....png"}
+    {"url": "http://127.0.0.1:9756/images/ab12....png"},
+    {"url": "http://127.0.0.1:9756/images/cd34....png"}
   ]
 }
 ```
@@ -69,7 +69,7 @@ curl -s http://127.0.0.1:8000/v1/images/generations \
 图生图（参考图 + 提示词）：
 
 ```bash
-curl -s -X POST http://127.0.0.1:8000/v1/images/edits \
+curl -s -X POST http://127.0.0.1:9756/v1/images/edits \
   -F 'image=@/path/to/reference.png;type=image/png' \
   -F 'prompt=改成油画风' \
   -F 'size=1024x1024' \

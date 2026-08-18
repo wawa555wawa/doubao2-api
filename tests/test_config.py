@@ -6,7 +6,7 @@ from doubao2_api.config import Settings
 def test_defaults():
     s = Settings(_env_file=None)
     assert s.host == "127.0.0.1"
-    assert s.port == 8000
+    assert s.port == 9756
     assert s.data_dir == Path("data")
     assert s.generation_timeout == 120.0
     assert s.login_timeout == 180.0
