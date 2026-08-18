@@ -1,9 +1,14 @@
 from __future__ import annotations
 
 import asyncio
+import datetime
+import hashlib
+import hmac
 import json
 import time
 import uuid
+import zlib
+from urllib.parse import quote
 
 import httpx
 
@@ -30,6 +35,7 @@ BASE_QUERY = (
     "aid=497858&device_platform=web&language=zh&pkg_type=release_version"
     "&real_aid=497858&region=CN&samantha_web=1&sys_region=CN"
     "&use-olympus-account=1&version_code=20800&web_platform=browser"
+    "&pc_version=3.32.51&doubao_pc_version=3.32.51&doubao_device_platform=web"
 )
 COMPLETION_URL = f"https://www.doubao.com/chat/completion?{BASE_QUERY}"
 CHAIN_SINGLE_URL = f"https://www.doubao.com/im/chain/single?{BASE_QUERY}"
@@ -58,6 +64,58 @@ def size_to_ratio(size: str) -> str:
     return min(_RATIOS, key=lambda t: abs(t[0] - r))[1]
 
 
+def _encode_query(params: dict[str, str]) -> str:
+    """构造 imagex 网关 query（canonical 与真实 URL 共用同一编码）。"""
+    return "&".join(
+        f"{quote(k, safe='-_.~')}={quote(v, safe='-_.~')}"
+        for k, v in sorted(params.items())
+    )
+
+
+def _sign_imagex_v4(
+    token: dict[str, str], method: str, query: str, body: bytes = b""
+) -> dict[str, str]:
+    """用 prepare_upload 返回的临时凭证对 /top/v1 请求做 AWS4-HMAC-SHA256 签名。
+
+    抓包核实的 SignedHeaders 仅 x-amz-date 与 x-amz-security-token；密钥派生
+    带 "AWS4" 前缀，region=cn-north-1、service=imagex 均由服务端实测验证。
+    """
+    access_key = token["access_key"]
+    secret_key = token["secret_key"]
+    session_token = token["session_token"]
+    now = datetime.datetime.now(datetime.timezone.utc)
+    amz_date = now.strftime("%Y%m%dT%H%M%SZ")
+    date_stamp = now.strftime("%Y%m%d")
+    scope = f"{date_stamp}/cn-north-1/imagex/aws4_request"
+
+    canonical_headers = f"x-amz-date:{amz_date}\nx-amz-security-token:{session_token}\n"
+    signed_headers = "x-amz-date;x-amz-security-token"
+    payload_hash = hashlib.sha256(body).hexdigest()
+    canonical_request = (
+        f"{method}\n/top/v1\n{query}\n{canonical_headers}\n"
+        f"{signed_headers}\n{payload_hash}"
+    )
+    string_to_sign = (
+        f"AWS4-HMAC-SHA256\n{amz_date}\n{scope}\n"
+        + hashlib.sha256(canonical_request.encode()).hexdigest()
+    )
+    # 注意：火山 imagex 的密钥派生带 "AWS4" 前缀（与 AWS 一致），实测无前缀会被拒签。
+    key_date = hmac.new(("AWS4" + secret_key).encode(), date_stamp.encode(), hashlib.sha256).digest()
+    key_region = hmac.new(key_date, b"cn-north-1", hashlib.sha256).digest()
+    key_service = hmac.new(key_region, b"imagex", hashlib.sha256).digest()
+    key_signing = hmac.new(key_service, b"aws4_request", hashlib.sha256).digest()
+    signature = hmac.new(key_signing, string_to_sign.encode(), hashlib.sha256).hexdigest()
+
+    return {
+        "Authorization": (
+            f"AWS4-HMAC-SHA256 Credential={access_key}/{scope}, "
+            f"SignedHeaders={signed_headers}, Signature={signature}"
+        ),
+        "x-amz-date": amz_date,
+        "x-amz-security-token": session_token,
+    }
+
+
 def parse_sse_events(text: str) -> list[tuple[str, dict]]:
     events: list[tuple[str, dict]] = []
     event: str | None = None
@@ -75,6 +133,51 @@ def parse_sse_events(text: str) -> list[tuple[str, dict]]:
             events.append((event, data))
             event, data_lines = None, []
     return events
+
+
+def sign_v4(
+    method: str,
+    path: str,
+    params: dict[str, str],
+    body: bytes,
+    access_key: str,
+    secret_key: str,
+    session_token: str,
+    amzdate: str,
+) -> str:
+    """火山引擎 ImageX 的 AWS4-HMAC-SHA256 签名（/top/v1 的 apply/commit 需要）。
+
+    抓包确认 SignedHeaders 只有 x-amz-date 与 x-amz-security-token。
+    """
+    scope = f"{amzdate[:8]}/cn-north-1/imagex/aws4_request"
+    qs = "&".join(
+        f"{quote(k, safe='-_.~')}={quote(str(v), safe='-_.~')}" for k, v in sorted(params.items())
+    )
+    canon = (
+        f"{method}\n{path}\n{qs}\n"
+        f"x-amz-date:{amzdate}\nx-amz-security-token:{session_token}\n\n"
+        f"x-amz-date;x-amz-security-token\n{hashlib.sha256(body).hexdigest()}"
+    )
+    string_to_sign = (
+        f"AWS4-HMAC-SHA256\n{amzdate}\n{scope}\n{hashlib.sha256(canon.encode()).hexdigest()}"
+    )
+
+    def _hm(key: bytes, msg: str) -> bytes:
+        return hmac.new(key, msg.encode(), hashlib.sha256).digest()
+
+    k = _hm(("AWS4" + secret_key).encode(), amzdate[:8])
+    k = _hm(k, "cn-north-1")
+    k = _hm(k, "imagex")
+    k = _hm(k, "aws4_request")
+    sig = hmac.new(k, string_to_sign.encode(), hashlib.sha256).hexdigest()
+    return (
+        f"AWS4-HMAC-SHA256 Credential={access_key}/{scope}, "
+        f"SignedHeaders=x-amz-date;x-amz-security-token, Signature={sig}"
+    )
+
+
+def _utcnow_amzdate() -> str:
+    return datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
 
 
 def build_completion_body(
@@ -219,6 +322,18 @@ class DoubaoClient:
         self._timeout = timeout
         self._poll_interval = poll_interval
 
+    def _query(self) -> str:
+        # 风控要求携带设备标识参数（实测缺 device_id/web_id 会被 rate limited）；
+        # 它们由扫码登录时从浏览器提取并保存在凭证里。无设备信息时退化为最小参数集。
+        q = BASE_QUERY
+        device = self._store.device
+        for key in ("device_id", "web_id", "tea_uuid"):
+            if device.get(key):
+                q += f"&{key}={device[key]}"
+        if device:
+            q += f"&web_tab_id={uuid.uuid4()}"
+        return q
+
     def _headers(self, im: bool = False) -> dict[str, str]:
         return {
             "Content-Type": IM_CONTENT_TYPE if im else "application/json",
@@ -263,51 +378,81 @@ class DoubaoClient:
             headers=self._headers(),
             json={"tenant_id": "5", "scene_id": "5", "resource_type": 2},
         )
-        data = resp.json()
-        service_id = data["data"]["service_id"]
+        payload = resp.json()
+        if payload.get("code") != 0:
+            if payload.get("code") == AUTH_EXPIRED_CODE:
+                raise AuthExpired("登录已过期")
+            raise GenerationFailed(f"准备上传失败: {payload}")
+        data = payload.get("data") or {}
+        service_id = data["service_id"]
+        token = data.get("upload_auth_token") or {}
 
-        # 2. apply（GET /top/v1?Action=ApplyImageUpload...）
-        resp = await client.get(
-            APPLY_UPLOAD_URL,
-            headers=self._headers(),
-            params={
+        # 2. apply（GET /top/v1?Action=ApplyImageUpload...，需 SigV4 签名）
+        apply_query = _encode_query(
+            {
                 "Action": "ApplyImageUpload",
                 "Version": "2018-08-01",
                 "ServiceId": service_id,
                 "NeedFallback": "true",
                 "FileSize": str(len(image)),
                 "FileExtension": ".png",
-            },
+            }
+        )
+        resp = await client.get(
+            f"{APPLY_UPLOAD_URL}?{apply_query}",
+            headers={**self._headers(), **_sign_imagex_v4(token, "GET", apply_query)},
         )
         payload = resp.json()
+        if payload.get("ResponseMetadata", {}).get("Error"):
+            raise GenerationFailed(f"申请上传地址失败: {payload}")
         address = payload["Result"]["UploadAddress"]
         store_info = address["StoreInfos"][0]
         store_uri = store_info["StoreUri"]
         upload_host = address["UploadHosts"][0]
         session_key = address["SessionKey"]
 
-        # 3. PUT 二进制
-        resp = await client.put(
-            f"https://{upload_host}/{store_uri}",
-            headers={"Authorization": store_info["Auth"], "Content-Type": "application/octet-stream"},
+        # 3. POST 二进制到对象存储（抓包核实：/upload/v1/ 前缀 + Content-CRC32 十六进制）
+        upload_headers = {
+            "Authorization": store_info["Auth"],
+            "Content-CRC32": f"{zlib.crc32(image) & 0xFFFFFFFF:08x}",
+            "Content-Type": "application/octet-stream",
+            'Content-Disposition': 'attachment; filename="reference.png"',
+        }
+        resp = await client.post(
+            f"https://{upload_host}/upload/v1/{store_uri}",
+            headers=upload_headers,
             content=image,
         )
         resp.raise_for_status()
+        upload_payload = resp.json()
+        if upload_payload.get("code") != 2000:
+            raise GenerationFailed(f"上传图片失败: {upload_payload}")
 
-        # 4. commit
-        resp = await client.post(
-            COMMIT_UPLOAD_URL,
-            headers=self._headers(),
-            params={
+        # 4. commit（同样需要 SigV4 签名）
+        commit_body = json.dumps({"SessionKey": session_key}, separators=(",", ":"))
+        commit_query = _encode_query(
+            {
                 "Action": "CommitImageUpload",
                 "Version": "2018-08-01",
                 "ServiceId": service_id,
+            }
+        )
+        resp = await client.post(
+            f"{COMMIT_UPLOAD_URL}?{commit_query}",
+            headers={
+                **self._headers(),
+                **_sign_imagex_v4(token, "POST", commit_query, commit_body.encode()),
             },
-            json={"SessionKey": session_key},
+            content=commit_body,
         )
         payload = resp.json()
+        if payload.get("ResponseMetadata", {}).get("Error"):
+            raise GenerationFailed(f"确认上传失败: {payload}")
         result = payload["Result"]
-        uri = result["Results"][0]["Uri"]
+        results = result.get("Results") or []
+        if not results or results[0].get("UriStatus") != 2000:
+            raise GenerationFailed(f"确认上传未完成: {payload}")
+        uri = results[0]["Uri"]
         plugin = (result.get("PluginResult") or [{}])[0]
         width = plugin.get("ImageWidth") or 0
         height = plugin.get("ImageHeight") or 0
@@ -352,7 +497,7 @@ class DoubaoClient:
 
     async def _send(self, client: httpx.AsyncClient, body: dict) -> str:
         async with client.stream(
-            "POST", COMPLETION_URL, json=body, headers=self._headers()
+            "POST", f"https://www.doubao.com/chat/completion?{self._query()}", json=body, headers=self._headers()
         ) as resp:
             content_type = resp.headers.get("content-type", "")
             text = "".join([chunk async for chunk in resp.aiter_text()])
@@ -370,6 +515,11 @@ class DoubaoClient:
                 if data.get("error_code") == RATE_LIMITED_CODE:
                     raise RateLimited(data.get("error_msg") or "rate limited")
                 raise GenerationFailed(f"生图流错误: {data}")
+            if event == "SSE_ACK":
+                # 实测最常见：ACK 里直接给出 conversation_id
+                ack_meta = data.get("ack_client_meta") or {}
+                if ack_meta.get("conversation_id"):
+                    conversation_id = ack_meta["conversation_id"]
             if event == "DOWNLINK_CMD":
                 notify = (data.get("downlink_body") or {}).get("pull_msg_notify") or {}
                 if notify.get("conversation_id"):
@@ -382,7 +532,7 @@ class DoubaoClient:
         deadline = asyncio.get_running_loop().time() + self._timeout
         while True:
             resp = await client.post(
-                CHAIN_SINGLE_URL,
+                f"https://www.doubao.com/im/chain/single?{self._query()}",
                 headers=self._headers(im=True),
                 json={
                     "cmd": 3100,
@@ -416,7 +566,11 @@ class DoubaoClient:
 
     @staticmethod
     def _parse_poll(payload: dict) -> tuple[list[str] | None, str | None]:
-        """返回 (图片URL列表, 失败原因)；两者都为 None 表示仍在生成中。"""
+        """返回 (图片URL列表, 失败原因)；两者都为 None 表示仍在生成中。
+
+        实测豆包经常先回一条纯文字消息（如"已生成……"）、图片结果在后续消息里，
+        所以必须遍历全部 bot 消息；没找到结果块就继续轮询，不提前判失败。
+        """
         messages = (
             (payload.get("downlink_body") or {})
             .get("pull_singe_chain_downlink_body", {})
@@ -425,23 +579,36 @@ class DoubaoClient:
         bot_msgs = [m for m in messages if m.get("user_type") == 2]
         if not bot_msgs:
             return None, None
-        latest = bot_msgs[-1]
-        blocks = latest.get("content_block") or []
-        for b in blocks:
-            creation = (b.get("content") or {}).get("creation_block")
-            if creation and b.get("is_finish"):
-                creations = creation.get("creations") or []
-                urls = [c["image"]["image_ori"]["url"] for c in creations if c.get("image")]
+
+        # 形态一：图片在消息 content_block 的 creation_block 里
+        for msg in bot_msgs:
+            for b in msg.get("content_block") or []:
+                creation = (b.get("content") or {}).get("creation_block")
+                if not creation or not b.get("is_finish"):
+                    continue
+                urls = [c["image"]["image_ori"]["url"] for c in creation.get("creations") or [] if c.get("image")]
                 if urls:
                     return urls, None
-        # 生成中的回复只含 thinking_block（block_type 10040，is_finish 也为 true），
-        # 按抓包笔记的失败判定（无 2074 块 + 回复结束 + 无 thinking_block）需排除。
-        has_thinking = any((b.get("content") or {}).get("thinking_block") for b in blocks)
-        if blocks and all(b.get("is_finish") for b in blocks) and not has_thinking:
-            texts = [
-                (b.get("content") or {}).get("text_block", {}).get("text", "")
-                for b in blocks
-            ]
-            reason = "；".join(t for t in texts if t) or "生成失败（无图片结果）"
-            return None, reason
+
+        # 形态二：content_block 为空，图片在 ext.creation_full_content
+        # （JSON 字符串，元素为 {BlockInfo: {BlockType, BlockContent, BlockMeta}}）。
+        for msg in bot_msgs:
+            full_content = (msg.get("ext") or {}).get("creation_full_content")
+            if not isinstance(full_content, str) or not full_content:
+                continue
+            try:
+                packets = json.loads(full_content)
+            except json.JSONDecodeError:
+                continue
+            for packet in packets:
+                info = packet.get("BlockInfo") or {}
+                if info.get("BlockType") != 2074:
+                    continue
+                if not (info.get("BlockMeta") or {}).get("is_finish"):
+                    return None, None  # 结果块已出现但未完成，继续等
+                block_content = info.get("BlockContent") or {}
+                creation = (block_content.get("content") or {}).get("creation_block") or {}
+                urls = [c["image"]["image_ori"]["url"] for c in creation.get("creations") or [] if c.get("image")]
+                if urls:
+                    return urls, None
         return None, None

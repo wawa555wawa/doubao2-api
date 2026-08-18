@@ -6,25 +6,19 @@
 ## §提交任务（文生图 / 图生图发送）
 
 - **方法/URL**：`POST https://www.doubao.com/chat/completion?<公共query参数>`
-- **公共 query 参数**（重放验证可用的最小集）：
-  `aid=497858&device_platform=web&language=zh&pkg_type=release_version&real_aid=497858&region=CN&samantha_web=1&sys_region=CN&use-olympus-account=1&version_code=20800&web_platform=browser`
-  - 浏览器实际还携带 `device_id`、`web_id`、`tea_uuid`、`web_tab_id`、`fp`、`msToken`、`a_bogus`。**重放验证结论：不带 fp/msToken/a_bogus 也能成功**；但风控敏感操作可能要求更多参数（见 §失败样本）。
+- **公共 query 参数**：
+  最小集（实测可发请求但**会立即被风控 rate limited**）：
+  `aid=497858&device_platform=web&language=zh&pkg_type=release_version&real_aid=497858&region=CN&samantha_web=1&sys_region=CN&use-olympus-account=1&version_code=20800&web_platform=browser&pc_version=3.32.51&doubao_pc_version=3.32.51&doubao_device_platform=web`
+  - **风控必需**：`device_id`、`web_id`、`tea_uuid`（实测补齐后不再触发限流；这三个值是账号/设备级稳定标识，由扫码登录流程从浏览器页面请求中提取并保存在凭证里），外加 `web_tab_id`（每次随机 uuid 即可）。
+  - 浏览器实际还携带 `fp`、`msToken`、`a_bogus`（JS 签名）。**实测结论：不带这三个签名参数也能成功**，无需逆向签名算法。
 - **必需请求头**：
   - `Content-Type: application/json`
   - `Cookie: <完整登录 Cookie>`
   - `User-Agent: <常见桌面浏览器 UA>`
   - `Referer: https://www.doubao.com/chat/`、`Origin: https://www.doubao.com`
 - **响应**：`200`，`Content-Type: text/event-stream`，SSE 事件流。事件格式：
-  ```
-  id: 0
-  event: DOWNLINK_CMD
-  data: {"cmd":50080,"sequence_id":"...","downlink_body":{"pull_msg_notify":{"conversation_id":"<会话ID>","message_index":"1","limit":2}},"version":"1"}
-
-  id: 1
-  event: SSE_REPLY_END
-  data: {"end_type":3}
-  ```
-  - `DOWNLINK_CMD` 事件的 `data.downlink_body.pull_msg_notify.conversation_id` 即新会话 ID（**JSON 路径**：解析 `data:` 后的 JSON）。
+  - `SSE_ACK`（实测最常见）：`data.ack_client_meta.conversation_id` 即新会话 ID（**JSON 路径**）。
+  - `DOWNLINK_CMD`（另一形态）：`data.downlink_body.pull_msg_notify.conversation_id` 为会话 ID。两种都实现了解析，优先 ACK。
   - `SSE_REPLY_END` 表示流结束；`end_type=3` 表示结果通过 IM 通道下发（需转去轮询）。
   - 心跳事件 `SSE_HEARTBEAT`（`data: {}`）可忽略。
   - 出错时发 `STREAM_ERROR` 事件（见 §失败样本）。
@@ -82,13 +76,11 @@
 - **响应**：`{"cmd":3100, "downlink_body": {"pull_singe_chain_downlink_body": {"messages": [...]}}}`
   - 消息数组按 `index_in_conv` 排列；bot 的回复消息（`user_type: 2`）内含 `content_block` 数组。
   - **生成中**：回复消息只有 `text_block`（block_type 10000，闲聊文本）和 `thinking_block`（block_type 10040，`streaming_title: "正在生成图片"`）。见 `tests/fixtures/poll_running.json`。
-  - **生成完成**：出现 **block_type 2074** 的块，`content.creation_block.creations[]` 每项一张图：
-    - 原图 URL JSON 路径：`creation_block.creations[i].image.image_ori.url`（带签名，长期有效）
-    - 备用：`image.image_thumb.url` / `image.image_preview.url`；`image.key` 为 tos uri。
-    - 块级 `is_finish: true`。
-    - 见 `tests/fixtures/poll_done.json`。
-  - 判定完成的建议逻辑：找到 user_type=2 的最新消息，若含 block_type 2074 且 `is_finish == true` 且 creations 非空 → 取全部 `image_ori.url`；否则继续轮询（间隔 2 秒）。
-  - 回复消息里没有 2074 块且 `is_finish` 全 true 且无进行中的 thinking_block → 视为失败（拒答/审核），取 text_block 文本作为错误信息。
+  - **生成完成（形态 A）**：`content_block` 中出现 **block_type 2074** 的块，`content.creation_block.creations[]` 每项一张图。见 `tests/fixtures/poll_done.json`。
+  - **生成完成（形态 B，重放实测出现）**：回复消息 `content_block` 为空数组、`content_type: 1`，真正的内容在 **`ext.creation_full_content`**（JSON 字符串，元素形如 `{"BlockInfo": {"BlockType": 2074, "BlockContent": {"content": {"creation_block": ...}}, "BlockMeta": {"is_finish": true}}}`）。2074 包且 `BlockMeta.is_finish == true` 时取图。见 `tests/fixtures/poll_done_ext.json`。两种形态都要兼容解析。
+  - **图片 URL JSON 路径**：`creation_block.creations[i].image.image_ori.url`（带签名，长期有效）；备用 `image.image_thumb.url` / `image.image_preview.url`；`image.key` 为 tos uri。
+  - 判定完成的建议逻辑：**遍历所有 user_type=2 的消息**，两种形态任一取到完成状态的 creations → 返回全部 `image_ori.url`；否则继续轮询（间隔 2 秒）。
+  - 实测模型常先回一条纯文字消息（"已生成……"）、图片结果在后续 bot 消息里；找不到结果块时继续轮询，不提前判失败。
 
 ## §上传（图生图参考图）
 
@@ -98,16 +90,22 @@
    请求体：`{"tenant_id":"5","scene_id":"5","resource_type":2}`
    响应：`data.service_id`（如 `a9rns2rl98`）、`data.upload_auth_token`（access_key/secret_key/session_token，临时凭证）。
    fixture：`prepare_upload_success.json`
-2. **`GET /top/v1?Action=ApplyImageUpload&Version=2018-08-01&ServiceId=<service_id>&NeedFallback=true&FileSize=<字节数>&FileExtension=<.png 等>&...`**
-   （query 还含 `s=<随机>` 等，照抄样本；此请求虽为 GET 但走 `/top/v1` 代理到 imagex）
-   响应：`Result.UploadAddress.StoreInfos[0].StoreUri`（tos uri）、`UploadHosts`、`Result.UploadAddress.StoreInfos[0].Auth`（PUT 授权头）。
+2. **`GET /top/v1?Action=ApplyImageUpload&Version=2018-08-01&ServiceId=<service_id>&NeedFallback=true&FileSize=<字节数>&FileExtension=<.png 等>`**
+   （此请求虽为 GET 但走 `/top/v1` 代理到 imagex；样本里的 `s=<随机>` 实测不需要）
+   **必须做 AWS4-HMAC-SHA256 签名**：用 `prepare_upload` 返回的临时凭证（access_key/secret_key/session_token），
+   `SignedHeaders=x-amz-date;x-amz-security-token`，region=`cn-north-1`、service=`imagex`，
+   密钥派生带 `"AWS4"` 前缀；GET 的 payload hash 为 `sha256("")`。
+   响应：`Result.UploadAddress.StoreInfos[0].StoreUri`（tos uri）、`UploadHosts`、`Result.UploadAddress.StoreInfos[0].Auth`。
    fixture：`apply_upload_success.json`
-3. **PUT 图片二进制到上传地址**（抓包中未直接捕获到该请求，按火山引擎 ImageX 上传协议实现）：
-   `PUT https://<UploadHosts[0]>/<StoreUri>`，请求头 `Authorization: <Auth>`，`Content-Type: application/octet-stream`，body 为图片字节。
-   ⚠️ 此步未经重放验证，实现时需在联调中确认。
+3. **`POST` 图片二进制到对象存储**（通过 fetch/XHR hook 抓包 + 重放验证）：
+   `POST https://<UploadHosts[0]>/upload/v1/<StoreUri>`（注意 `/upload/v1/` 前缀和 POST，不是 PUT！），
+   请求头：`Authorization: <Auth>`（SpaceKey/...）、`Content-CRC32: <zlib.crc32 的 8 位小写十六进制>`、
+   `Content-Type: application/octet-stream`（`Content-Disposition: attachment; filename=...` 与 `X-Storage-U` 均实测可省略）。
+   成功响应：`{"code":2000}`。
 4. **`POST /top/v1?Action=CommitImageUpload&Version=2018-08-01&ServiceId=<service_id>`**（Content-Type: `application/json`）
    请求体：`{"SessionKey": "<base64 JSON，含 storeInfos/StoreUri+Auth、uploadHost、uri>"}`——网页版直接复用第 2 步返回里的 SessionKey 结构（见抓包 `0258-v1.json` 的请求体）。
-   响应：`Result.Results[0].Uri` = StoreUri；`Result.PluginResult[0]` 含图片元信息（宽/高）。
+   **同样要做 SigV4 签名**（对 POST body 的 SHA256 签名）。
+   响应：`Result.Results[0].Uri` = StoreUri 且 `UriStatus == 2000` 表示上传成功；`Result.PluginResult[0]` 含图片元信息（宽/高）。
    fixture：`commit_upload_success.json`
 5. **`POST /alice/message/pre_handle_v2_without_conv`**（Content-Type: 标准 `application/json`，抓包确认）
    请求体：`{"uplink_entity":{"entity_type":2,"entity_content":{"image":{"key":"<StoreUri>"}},"identifier":"<uuid1>"},"bot_id":"7338286299411103781","local_message_id":"<uuid1>"}`
@@ -142,6 +140,8 @@ OpenAI 风格 `size`（`"宽x高"`）→ ratio 的映射：计算宽高比，取
 ## §运行时注意事项（重放实验结论）
 
 1. **ID 去重**：`local_message_id`/`block_id`/`unique_key`/`local_conversation_id` 必须每次新生成，否则服务端去重返回旧会话。
-2. **风控**：连续快速发消息可能触发 `STREAM_ERROR 710022004`（滑块验证）。低频使用问题不大；触发后映射 429，人工在浏览器里发一条消息通过验证即可恢复。
-3. **SSE 只需浅解析**：逐行读 `event:`/`data:`，只需识别 `DOWNLINK_CMD`（取 conversation_id）、`STREAM_ERROR`（报错）、`SSE_REPLY_END`（结束）；其余忽略。
-4. 生成耗时参考：文生图约 10-30 秒；轮询间隔建议 2 秒。
+2. **设备参数是风控关键**：只带最小公共参数重放会立即 `STREAM_ERROR 710022004`（滑块验证）；补齐 `device_id`/`web_id`/`tea_uuid`（+ 随机 `web_tab_id`）后正常。这三个值通过扫码登录流程从浏览器页面请求 URL 中提取（见 `session_refresh.extract_device_params`），存于 `credentials.json` 的 `device` 字段。风控一旦触发，需要人工在浏览器正常发一条消息（可能需完成滑块）才会恢复。
+3. **SSE 只需浅解析**：逐行读 `event:`/`data:`，识别 `SSE_ACK`/`DOWNLINK_CMD`（取 conversation_id）、`STREAM_ERROR`（报错）、`SSE_REPLY_END`（结束）；其余忽略。
+4. 生成耗时参考：文生图约 20-40 秒（含排队）；轮询间隔建议 2 秒。
+5. 每次提示词默认产出 4 张图（ creations 数组 4 项）。
+6. **待复核**：实测请求 `size=1024x1024`（ratio 映射为 `1:1`）时返回图为 2848x1600（16:9），ratio 字段是否真正生效、字段名/取值是否需要调整，需进一步对比网页版抓包。
