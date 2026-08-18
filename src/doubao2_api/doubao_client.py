@@ -180,14 +180,34 @@ def _utcnow_amzdate() -> str:
     return datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
 
 
+def _size_hint(size: str) -> str:
+    """把 size 转成自然语言提示，附在提示词后。
+
+    实测 chat_ability 里的 ratio 字段并不总是生效，模型对提示词中的
+    "图片比例为X:Y" / "图片尺寸为WxH" 描述更稳定。
+    """
+    parts = []
+    ratio = size_to_ratio(size)
+    if ratio != "auto":
+        parts.append(f"图片比例为{ratio}")
+    try:
+        w, h = (int(v) for v in size.lower().split("x"))
+        if w > 0 and h > 0:
+            parts.append(f"图片尺寸为{size.lower()}")
+    except (TypeError, ValueError):
+        pass
+    return "，" + "，".join(parts) if parts else ""
+
+
 def build_completion_body(
     prompt: str,
-    ratio: str,
+    size: str,
     attachments: list[dict] | None = None,
     attachment_local_message_ids: list[str] | None = None,
 ) -> dict:
     # attachment_local_message_ids[i] 对应 attachments[i]：抓包确认每个附件消息的
     # local_message_id 必须与该附件 pre_handle 请求体中的 local_message_id 一致。
+    ratio = size_to_ratio(size)
     messages: list[dict] = []
     for i, attachment in enumerate(attachments or []):
         if attachment_local_message_ids is not None:
@@ -221,7 +241,7 @@ def build_completion_body(
                     "block_type": 10000,
                     "content": {
                         "text_block": {
-                            "text": f"生成图片：{prompt}",
+                            "text": f"生成图片：{prompt}{_size_hint(size)}",
                             "icon_url": "",
                             "icon_url_dark": "",
                             "summary": "",
@@ -359,7 +379,7 @@ class DoubaoClient:
                 attachment_local_message_ids.append(local_message_id)
             body = build_completion_body(
                 prompt,
-                size_to_ratio(size),
+                size,
                 attachments or None,
                 attachment_local_message_ids or None,
             )

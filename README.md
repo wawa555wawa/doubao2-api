@@ -98,7 +98,7 @@ curl -s -X POST http://127.0.0.1:8000/v1/images/edits \
 ## 已知限制
 
 - 豆包风控触发（`429 rate_limited`）后，需要人工在浏览器正常发一条消息（可能需要完成滑块验证），之后 API 恢复可用。
-- `size` 的 `宽x高` 会映射到豆包的 `ratio` 参数，但实测 `1024x1024` 请求返回的是 16:9 图，ratio 是否真正生效待进一步核对。
+- `size` 会同时写进 `chat_ability` 的 `ratio` 字段和提示词（如"图片比例为1:1，图片尺寸为1024x1024"）；实测后者对 Seedream 生效更稳定，`1024x1024` 现可稳定产出 1:1 图。
 - 默认 `b64_json` 响应会包含整张图的 base64（数 MB），批量调用建议显式传 `response_format=url`。
 - 协议细节与抓包笔记见 `docs/doubao-api-notes.md`。
 

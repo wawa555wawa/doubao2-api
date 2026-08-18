@@ -106,6 +106,20 @@ async def test_poll_timeout_raises(tmp_path):
         await client.generate("一只猫", "1024x1024", 1)
 
 
+def test_size_hint():
+    assert dc._size_hint("1024x1024") == "，图片比例为1:1，图片尺寸为1024x1024"
+    assert dc._size_hint("1344x768") == "，图片比例为16:9，图片尺寸为1344x768"
+    assert dc._size_hint("garbage") == ""
+    assert dc._size_hint("0x0") == ""
+
+
+def test_build_completion_body_appends_size_hint():
+    body = dc.build_completion_body("一只猫", "1024x1024")
+    text = body["messages"][-1]["content_block"][0]["content"]["text_block"]["text"]
+    assert text == "生成图片：一只猫，图片比例为1:1，图片尺寸为1024x1024"
+    assert '"ratio": "1:1"' in body["chat_ability"]["ability_param"]
+
+
 def test_size_to_ratio():
     assert dc.size_to_ratio("1024x1024") == "1:1"
     assert dc.size_to_ratio("1792x1024") == "16:9"

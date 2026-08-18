@@ -137,6 +137,8 @@
 OpenAI 风格 `size`（`"宽x高"`）→ ratio 的映射：计算宽高比，取最接近的上表比例；无法解析时用 `"auto"`。
 `model` 固定 `"Seedream 4.5"`。
 
+**size 注入提示词（实测有效）**：`chat_ability.ability_param` 里的 `ratio` 实测不总是生效（请求 1:1 曾返回 16:9 图）。客户端会把 size 转成自然语言附在提示词后：可解析时附 `，图片比例为X:Y，图片尺寸为WxH`；实测 `1024x1024` 由此稳定产出 2048x2048 方图。
+
 ## §运行时注意事项（重放实验结论）
 
 1. **ID 去重**：`local_message_id`/`block_id`/`unique_key`/`local_conversation_id` 必须每次新生成，否则服务端去重返回旧会话。
@@ -144,4 +146,4 @@ OpenAI 风格 `size`（`"宽x高"`）→ ratio 的映射：计算宽高比，取
 3. **SSE 只需浅解析**：逐行读 `event:`/`data:`，识别 `SSE_ACK`/`DOWNLINK_CMD`（取 conversation_id）、`STREAM_ERROR`（报错）、`SSE_REPLY_END`（结束）；其余忽略。
 4. 生成耗时参考：文生图约 20-40 秒（含排队）；轮询间隔建议 2 秒。
 5. 每次提示词默认产出 4 张图（ creations 数组 4 项）。
-6. **待复核**：实测请求 `size=1024x1024`（ratio 映射为 `1:1`）时返回图为 2848x1600（16:9），ratio 字段是否真正生效、字段名/取值是否需要调整，需进一步对比网页版抓包。
+6. **尺寸控制靠提示词**：`chat_ability` 的 ratio 字段实测不总是生效；把"图片比例为1:1，图片尺寸为1024x1024"写进提示词后稳定产出方图（见 §尺寸映射）。
