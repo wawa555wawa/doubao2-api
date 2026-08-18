@@ -92,6 +92,14 @@ def create_app(
             "auth_expired",
         )
 
+    @app.exception_handler(AuthExpired)
+    async def _(request: Request, exc: AuthExpired):
+        return _error(
+            401,
+            "登录态过期且自动续期后仍失败，请运行 `doubao2-api login` 重新登录",
+            "auth_expired",
+        )
+
     async def run_generation(
         prompt: str, size: str, n: int, reference_images: list[bytes] | None
     ) -> list[StoredImage]:

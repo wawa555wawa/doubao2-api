@@ -118,3 +118,18 @@ def test_auth_expired_refresh_timeout_maps_to_401(tmp_path, monkeypatch):
     resp = client.post("/v1/images/generations", json={"prompt": "x"})
     assert resp.status_code == 401
     assert "doubao2-api login" in resp.json()["error"]["message"]
+
+
+def test_auth_expired_after_refresh_maps_to_401(tmp_path, monkeypatch):
+    client, doubao = make_client(tmp_path, lambda _: AuthExpired())
+    monkeypatch.setattr(
+        "doubao2_api.main.refresh_credentials",
+        lambda store, timeout, headless: None,
+    )
+    resp = client.post("/v1/images/generations", json={"prompt": "x"})
+    assert resp.status_code == 401
+    body = resp.json()
+    assert "error" in body
+    assert body["error"]["code"] == "auth_expired"
+    assert "doubao2-api login" in body["error"]["message"]
+    assert len(doubao.calls) == 2
