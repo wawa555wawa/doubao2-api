@@ -57,21 +57,11 @@ def main() -> None:
         if request.resource_type not in ("xhr", "fetch"):
             return
         seq = next_seq()
-        body_error = None
-        try:
-            body = response.json()
-        except Exception:
-            try:
-                body = response.text()
-            except Exception as exc:
-                body = None
-                body_error = f"{type(exc).__name__}: {exc}"
-        if isinstance(body, str) and len(body) > MAX_BODY_CHARS:
-            body = body[:MAX_BODY_CHARS] + "...[truncated]"
         try:
             response_headers = dict(response.headers)
         except Exception:
             response_headers = {}
+        is_sse = "text/event-stream" in response_headers.get("content-type", "")
         record = {
             "seq": seq,
             "kind": "http",
@@ -81,10 +71,26 @@ def main() -> None:
             "request_headers": dict(request.headers),
             "request_post_data": request.post_data,
             "response_headers": response_headers,
-            "response_body": body,
-            "body_error": body_error,
+            "response_body": None,
+            "body_error": None,
         }
-        write_record(sanitize(response.url.split("/")[-1].split("?")[0] or "root"), record)
+        name = sanitize(response.url.split("/")[-1].split("?")[0] or "root")
+        if is_sse:
+            # SSE 流不能在事件回调里同步读（会阻塞事件循环），延迟到结束时统一读
+            pending_sse.append((name, record, response))
+        else:
+            try:
+                body = response.json()
+            except Exception:
+                try:
+                    body = response.text()
+                except Exception as exc:
+                    body = None
+                    record["body_error"] = f"{type(exc).__name__}: {exc}"
+            if isinstance(body, str) and len(body) > MAX_BODY_CHARS:
+                body = body[:MAX_BODY_CHARS] + "...[truncated]"
+            record["response_body"] = body
+        write_record(name, record)
         print(f"  [{seq:04d}] {request.method} {response.status} {response.url[:120]}")
 
     def on_websocket(ws) -> None:
@@ -108,6 +114,7 @@ def main() -> None:
         ws.on("framereceived", lambda payload: on_frame("received", payload))
 
     open_ws: list[dict] = []
+    pending_sse: list[tuple[str, dict, object]] = []
 
     with sync_playwright() as p:
         context = p.chromium.launch_persistent_context(
@@ -134,6 +141,20 @@ def main() -> None:
             input("按回车结束抓包...")
         except (EOFError, KeyboardInterrupt):
             pass
+
+        # 结束前统一读取 SSE 响应体（此时流已完结）
+        for name, record, response in pending_sse:
+            try:
+                body = response.text()
+            except Exception as exc:
+                body = None
+                record["body_error"] = f"{type(exc).__name__}: {exc}"
+            if isinstance(body, str) and len(body) > MAX_BODY_CHARS:
+                body = body[:MAX_BODY_CHARS] + "...[truncated]"
+            record["response_body"] = body
+            write_record(name, record)
+            print(f"  SSE 响应体已补录: [{record['seq']:04d}] {record['url'][:100]}")
+
         context.close()
 
     for record in open_ws:
