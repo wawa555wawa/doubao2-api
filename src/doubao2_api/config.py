@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     login_timeout: float = 180.0
     max_concurrent: int = 1
     headless: bool = False
+    # 登录态剩余不足这么多天时，启动日志提前告警（豆包 sid_guard 是 30 天硬过期）
+    session_warn_days: float = 3.0
 
 
 def get_settings() -> Settings:
