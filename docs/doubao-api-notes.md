@@ -128,8 +128,22 @@
 
 ## §登录态标记
 
-登录成功后出现的关键 Cookie：**`sessionid`**（另有 `sessionid_ss`、`sid_tt` 等）。扫码续期时检测 `sessionid` 存在即视为登录成功。
+登录成功后出现的关键 Cookie：**`sessionid`**（另有 `sessionid_ss`、`sid_tt` 等）。
 （已从浏览器 profile 直接提取验证：`sessionid`、`sessionid_ss`、`sid_guard`、`sid_tt`、`ttwid`、`passport_csrf_token` 等均存在。）
+
+### 有效期：`sid_guard` 声明 30 天硬过期（2026-10-17 补充）
+
+`sid_guard` 的值是 **URL 编码**的（`|` 写作 `%7C`），解码后为四段：
+
+```
+<session_id>|<签发时间戳(秒)>|<TTL(秒)>|<到期日 GMT>
+99af…9e4a%7C1787101589%7C2592000%7CFri,+18-Sep-2026+01:06:29+GMT
+```
+
+- TTL 实测 `2592000` 秒 = **30 天**；`签发时间 + TTL` 与第 4 段的 GMT 日期一致，可交叉校验。
+- 该 Cookie 的签发时间与"登录落盘时间"只差几秒 —— 说明 **会话不会因为持续调用而滚动续期**，到点即失效，之后所有请求都返回 `710012001`（见 §未登录特征）。
+- 因此**只看 `sessionid` 是否存在判断登录态是不够的**（旧会话同样存在）。判定"是否新登录"必须用 `sid_guard` 的签发时间：新签发的 `到期时间` 必须晚于旧凭证的 `到期时间`，且距当前至少还有一段有效期（实现见 `session_refresh.is_fresh_session`，阈值 `MIN_FRESH_SESSION_TTL`）。
+- 本地可据此提前发现过期：`credentials.CredentialStore.session_expires_at / is_expired()`，无需发请求。
 
 ## §尺寸映射
 
@@ -147,3 +161,10 @@ OpenAI 风格 `size`（`"宽x高"`）→ ratio 的映射：计算宽高比，取
 4. 生成耗时参考：文生图约 20-40 秒（含排队）；轮询间隔建议 2 秒。
 5. 每次提示词默认产出 4 张图（ creations 数组 4 项）。
 6. **尺寸控制靠提示词**：`chat_ability` 的 ratio 字段实测不总是生效；把"图片比例为1:1，图片尺寸为1024x1024"写进提示词后稳定产出方图（见 §尺寸映射）。
+7. **扫码续期的判定不能只看 `sessionid` 是否存在**：旧 `sessionid` 同样存在，"看到 sessionid 就算登录成功"会把残留的旧会话当成本次登录结果落盘。改为以 `sid_guard` 的签发时间为准（新到期时间必须晚于旧凭证，且至少还剩 1 小时），并显式用空白 context（`storage_state={"cookies": [], "origins": []}`）启动。实测默认 `browser.new_context()` 本身不会带上磁盘 Cookie（无 `user_data_dir`），所以旧实现并没有"自我满足"；这条约束是防回归：一旦有人改成持久化 profile，旧会话就会被立刻误判。回归测试：`tests/test_session_refresh.py::test_stale_session_is_never_taken_as_login`。
+8. **服务端下发的 `Set-Cookie` 目前未回写**：豆包会话若在浏览期间续签/轮换，httpx 客户端拿到的 `Set-Cookie` 会被丢弃（客户端每次请求都用磁盘快照）。未观察到实际影响（30 天硬过期，无滑动续期），但若后续出现"明明没过期却 401"，优先查这里。
+9. **保活（keepalive）与"页面访问能否滚动续签"**：`launch_persistent_context(user_data_dir=...)` 常驻 profile 后，定时（默认 6h）打开 `https://www.doubao.com/chat/` 并比对 `sid_guard` 签发时间。实测记录（2026-10-17，未登录 profile）：
+   - 持久化 profile 在有头/无头下都能正常启动并加载豆包页面（有头 7.2s、无头 6.7s；页面标题 `豆包 - 字节跳动旗下 AI 智能助手`，右上角有"登录"入口即扫码位）；
+   - **`device_id`/`web_id`/`tea_uuid` 在页面加载时就会出现在 `/chat/completion` 请求 URL 上**，无需登录即可捕获 —— 这也是 `login_with_profile` 里 device 参数的来源；
+   - 未登录时 context 里只有 `ttwid`/`passport_csrf_token`/`s_v_web_id` 等匿名 Cookie，**没有 `sessionid`**，所以"没登录"能被明确识别，不会误判。
+   - **仍未验证**：带着合法 `sessionid` 访问页面时服务端会不会重新签发（滚动续签）。这是保活能否"免扫码"的唯一前提；代码不做假设 —— 续了才落盘，没续只记日志。第一次成功登录后的保活日志即为判据。
