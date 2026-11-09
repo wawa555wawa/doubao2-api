@@ -129,3 +129,18 @@ def test_login_with_profile_headless_flag(tmp_path, monkeypatch, capsys):
     with patch.object(sys, "argv", ["doubao2-api", "login", "--profile", "--headless"]):
         main()
     assert called == [True]
+
+
+# ---- MCP stdio ----
+
+
+def test_mcp_command_starts_stdio_server(monkeypatch):
+    called = []
+    monkeypatch.setattr(
+        "doubao2_api.mcp_server.run_server", lambda: called.append(True)
+    )
+
+    with patch.object(sys, "argv", ["doubao2-api", "mcp"]):
+        main()
+
+    assert called == [True]

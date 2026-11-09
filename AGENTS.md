@@ -9,6 +9,7 @@
 - `POST /v1/images/generations` 文生图
 - `POST /v1/images/edits` 图生图
 - `GET /images/{文件名}` 生成图片静态服务
+- `doubao2-api mcp` MCP stdio 工具 `generate_image`
 
 客户端直连 `www.doubao.com`（completion SSE → IM 轮询 → imagex 上传链），不需要常驻浏览器；登录态失效时用 Playwright 弹浏览器扫码续期。
 
@@ -19,6 +20,7 @@
 .venv/bin/pytest -q           # 全量测试（TDD 先写测试）
 .venv/bin/doubao2-api login   # 扫码登录，写 data/credentials.json
 .venv/bin/doubao2-api serve   # 启动服务，默认 127.0.0.1:9756
+.venv/bin/doubao2-api mcp     # 启动 MCP stdio server（OpenClaw 等）
 ```
 
 ## 目录结构
@@ -31,7 +33,8 @@ src/doubao2_api/
   session_refresh.py # Playwright 扫码登录 + 设备参数提取
   images.py          # 结果图下载落地
   main.py            # FastAPI 路由层与错误映射
-  cli.py             # serve / login 命令
+  cli.py             # serve / login / status / mcp 命令
+  mcp_server.py      # FastMCP stdio server，暴露 generate_image
 tests/               # 全部离线测试；fixtures 是脱敏样本
 docs/doubao-api-notes.md  # 抓包与重放协议笔记（协议事实来源）
 tools/capture_doubao.py   # Playwright 抓包工具
@@ -44,6 +47,7 @@ tools/capture_doubao.py   # Playwright 抓包工具
 3. **改动协议前先读 `docs/doubao-api-notes.md`**。联调中的新发现（新事件、新响应形态、新参数）要同步更新该笔记，并补充脱敏 fixture。
 4. 提交保持原子：一个 commit 只做一件事；提交前跑全量 `pytest`。
 5. 保持 OpenAI 响应/错误格式不变：`{"error":{"message","type","code"}}`。
+6. **MCP stdio 的 stdout 只能输出 JSON-RPC**：新增日志一律走 stderr，禁止 `print()` 到 stdout。
 
 ## 协议关键点（踩坑索引）
 

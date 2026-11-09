@@ -5,6 +5,7 @@
 - `POST /v1/images/generations` — 文生图（JSON）
 - `POST /v1/images/edits` — 图生图（multipart 上传参考图）
 - `GET /images/{文件名}` — 本地静态图片服务（`response_format=url` 时使用）
+- MCP stdio server — OpenClaw 等 MCP 客户端直接调用生图能力
 
 客户端按真实抓包协议直连 `www.doubao.com`（completion SSE + IM 轮询 + imagex 上传链），无需浏览器常驻；凭证失效时自动弹浏览器扫码续期。
 
@@ -86,6 +87,42 @@ doubao2-api serve
 | `KEEPALIVE_INTERVAL` | `21600` | 保活访问间隔（秒，默认 6 小时） |
 | `KEEPALIVE_PAGE_WAIT_MS` | `10000` | 每次访问后等页面多久（毫秒），留给服务端续签 |
 | `BROWSER_CHANNEL` | 空 | 有头模式建议填 `chrome`，用系统 Chrome 更像真人 |
+
+## MCP（stdio）
+
+除 HTTP API 外，也可以通过 MCP 把生图能力提供给 OpenClaw 等客户端：
+
+```bash
+doubao2-api mcp
+```
+
+FastMCP stdio server 暴露一个工具：
+
+```text
+generate_image(prompt: str, size: str = "1024x1024", n: int = 1) -> list[str]
+```
+
+- 复用 `DoubaoClient.generate()` 与现有 `data/credentials.json`，不额外维护登录逻辑；
+- 结果图落盘到 `data/images/`，返回图片的本地绝对路径；
+- 服务端轮询超时至少 **120 秒**（即使 `GENERATION_TIMEOUT` 配得更小也按 120 秒），工具描述会提示客户端留足等待时间；
+- 登录过期会提示运行 `doubao2-api login`；触发 429 会提示等待重试；其他错误返回原始错误摘要；
+- stdio 模式下 **stdout 只输出 JSON-RPC**，所有日志走 stderr。
+
+OpenClaw 配置示例：
+
+```json
+{
+  "mcpServers": {
+    "doubao2-api": {
+      "command": "/path/to/doubao2-api/.venv/bin/doubao2-api",
+      "args": ["mcp"],
+      "env": {"DATA_DIR": "/path/to/doubao2-api/data"}
+    }
+  }
+}
+```
+
+`DATA_DIR` 建议用绝对路径，避免 MCP 客户端从别的目录启动时找不到 `data/credentials.json`。
 
 ## 调用示例
 

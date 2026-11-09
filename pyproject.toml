@@ -13,6 +13,8 @@ dependencies = [
     "playwright",
     "pydantic-settings",
     "python-multipart",
+    # FastMCP 只存在于 mcp 1.x；2.x 已将其重命名为 MCPServer。
+    "mcp>=1.0,<2",
 ]
 
 [project.optional-dependencies]

@@ -87,6 +87,7 @@ def main() -> None:
         help="无头模式（profile 已登录时可用；未登录则看不到二维码）",
     )
     sub.add_parser("status", help="查看登录态、有效期与保活配置")
+    sub.add_parser("mcp", help="启动 MCP stdio server（供 OpenClaw 等客户端调用）")
     args = parser.parse_args()
 
     settings = get_settings()
@@ -98,6 +99,12 @@ def main() -> None:
         code = _login(settings, args.profile, args.headless)
         if code:
             raise SystemExit(code)
+        return
+
+    if args.command == "mcp":
+        from .mcp_server import run_server
+
+        run_server()
         return
 
     uvicorn.run("doubao2_api.main:app", host=settings.host, port=settings.port)
