@@ -1,3 +1,4 @@
+import base64
 import json
 import os
 import queue
@@ -36,7 +37,14 @@ class FakeDoubao:
         self.calls: list[dict] = []
 
     async def generate(self, prompt, size, n=1, reference_images=None):
-        self.calls.append({"prompt": prompt, "size": size, "n": n})
+        self.calls.append(
+            {
+                "prompt": prompt,
+                "size": size,
+                "n": n,
+                "reference_images": reference_images,
+            }
+        )
         if self.error is not None:
             raise self.error
         return self.urls[:n]
@@ -73,9 +81,17 @@ async def test_generate_image_is_listed_with_timeout_hint():
     assert "120" in tool.description
     schema = tool.inputSchema
     assert schema["required"] == ["prompt"]
-    assert set(schema["properties"]) == {"prompt", "size", "n"}
+    assert set(schema["properties"]) == {
+        "prompt",
+        "size",
+        "n",
+        "reference_image_paths",
+        "reference_images_base64",
+    }
     assert schema["properties"]["size"]["default"] == "1024x1024"
     assert schema["properties"]["n"]["default"] == 1
+    assert "参考图" in tool.description
+    assert "base64" in tool.description
 
 
 async def test_generate_image_returns_absolute_paths(monkeypatch, tmp_path):
@@ -85,7 +101,12 @@ async def test_generate_image_returns_absolute_paths(monkeypatch, tmp_path):
     paths = await mcp_server.generate_image("一只月球上的猫", size="1024x1024", n=2)
 
     assert client.calls == [
-        {"prompt": "一只月球上的猫", "size": "1024x1024", "n": 2}
+        {
+            "prompt": "一只月球上的猫",
+            "size": "1024x1024",
+            "n": 2,
+            "reference_images": None,
+        }
     ]
     assert runtime.images.urls == [
         "https://cdn.example.com/a.png",
@@ -98,6 +119,104 @@ async def test_generate_image_returns_absolute_paths(monkeypatch, tmp_path):
     for path in paths:
         assert Path(path).is_absolute()
         assert Path(path).is_file()
+
+
+async def test_generate_image_with_reference_image_path(monkeypatch, tmp_path):
+    reference = tmp_path / "reference.png"
+    reference.write_bytes(b"reference image bytes")
+    client = FakeDoubao(["https://cdn.example.com/a.png"])
+    install_runtime(monkeypatch, tmp_path, client=client)
+
+    await mcp_server.generate_image(
+        "改成油画风", reference_image_paths=[str(reference)]
+    )
+
+    assert client.calls[0]["reference_images"] == [b"reference image bytes"]
+
+
+async def test_generate_image_with_reference_image_base64(monkeypatch, tmp_path):
+    encoded = base64.b64encode(b"base64 image bytes").decode("ascii")
+    client = FakeDoubao(["https://cdn.example.com/a.png"])
+    install_runtime(monkeypatch, tmp_path, client=client)
+
+    await mcp_server.generate_image(
+        "改成水彩风",
+        reference_images_base64=[f"data:image/png;base64,{encoded}"],
+    )
+
+    assert client.calls[0]["reference_images"] == [b"base64 image bytes"]
+
+
+async def test_generate_image_combines_paths_then_base64(monkeypatch, tmp_path):
+    reference = tmp_path / "reference.png"
+    reference.write_bytes(b"path image bytes")
+    encoded = base64.b64encode(b"base64 image bytes").decode("ascii")
+    client = FakeDoubao(["https://cdn.example.com/a.png"])
+    install_runtime(monkeypatch, tmp_path, client=client)
+
+    await mcp_server.generate_image(
+        "融合两张参考图",
+        reference_image_paths=[str(reference)],
+        reference_images_base64=[encoded],
+    )
+
+    assert client.calls[0]["reference_images"] == [
+        b"path image bytes",
+        b"base64 image bytes",
+    ]
+
+
+async def test_generate_image_rejects_missing_reference_path(monkeypatch, tmp_path):
+    client = FakeDoubao()
+    install_runtime(monkeypatch, tmp_path, client=client)
+
+    with pytest.raises(ToolError) as exc_info:
+        await mcp_server.generate_image(
+            "x", reference_image_paths=[str(tmp_path / "missing.png")]
+        )
+
+    assert "不存在" in str(exc_info.value)
+    assert client.calls == []
+
+
+async def test_generate_image_rejects_invalid_base64(monkeypatch, tmp_path):
+    client = FakeDoubao()
+    install_runtime(monkeypatch, tmp_path, client=client)
+
+    with pytest.raises(ToolError) as exc_info:
+        await mcp_server.generate_image("x", reference_images_base64=["not-base64!"])
+
+    assert "base64" in str(exc_info.value)
+    assert client.calls == []
+
+
+async def test_generate_image_rejects_too_many_reference_images(monkeypatch, tmp_path):
+    client = FakeDoubao()
+    install_runtime(monkeypatch, tmp_path, client=client)
+    encoded = base64.b64encode(b"x").decode("ascii")
+
+    with pytest.raises(ToolError) as exc_info:
+        await mcp_server.generate_image(
+            "x",
+            reference_images_base64=[encoded] * (mcp_server.MAX_REFERENCE_IMAGES + 1),
+        )
+
+    assert "最多" in str(exc_info.value)
+    assert client.calls == []
+
+
+async def test_generate_image_rejects_oversized_reference_image(monkeypatch, tmp_path):
+    monkeypatch.setattr(mcp_server, "MAX_REFERENCE_IMAGE_BYTES", 4)
+    reference = tmp_path / "large.png"
+    reference.write_bytes(b"12345")
+    client = FakeDoubao()
+    install_runtime(monkeypatch, tmp_path, client=client)
+
+    with pytest.raises(ToolError) as exc_info:
+        await mcp_server.generate_image("x", reference_image_paths=[str(reference)])
+
+    assert "过大" in str(exc_info.value)
+    assert client.calls == []
 
 
 async def test_generate_image_asks_to_login_when_no_credentials(monkeypatch, tmp_path):

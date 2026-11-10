@@ -34,7 +34,7 @@ src/doubao2_api/
   images.py          # 结果图下载落地
   main.py            # FastAPI 路由层与错误映射
   cli.py             # serve / login / status / mcp 命令
-  mcp_server.py      # FastMCP stdio server，暴露 generate_image
+  mcp_server.py      # FastMCP stdio server，generate_image 支持文生图/参考图
 tests/               # 全部离线测试；fixtures 是脱敏样本
 docs/doubao-api-notes.md  # 抓包与重放协议笔记（协议事实来源）
 tools/capture_doubao.py   # Playwright 抓包工具

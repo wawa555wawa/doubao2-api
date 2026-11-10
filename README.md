@@ -99,14 +99,35 @@ doubao2-api mcp
 FastMCP stdio server 暴露一个工具：
 
 ```text
-generate_image(prompt: str, size: str = "1024x1024", n: int = 1) -> list[str]
+generate_image(
+    prompt: str,
+    size: str = "1024x1024",
+    n: int = 1,
+    reference_image_paths: list[str] | None = None,
+    reference_images_base64: list[str] | None = None,
+) -> list[str]
 ```
 
-- 复用 `DoubaoClient.generate()` 与现有 `data/credentials.json`，不额外维护登录逻辑；
+- 只传 `prompt` 是文生图；提供参考图参数即走图生图，复用 `DoubaoClient.generate(..., reference_images=...)` 和现有上传链；
+- `reference_image_paths` 是 **server 本机可读**的文件路径（相对路径按 server 工作目录解析）；
+- `reference_images_base64` 是 base64 字符串，支持 `data:image/png;base64,...` 前缀；
+- 两类参考图可同时使用，按“路径在前、base64 在后”合并；最多 8 张，单张不超过 20 MB；
 - 结果图落盘到 `data/images/`，返回图片的本地绝对路径；
 - 服务端轮询超时至少 **120 秒**（即使 `GENERATION_TIMEOUT` 配得更小也按 120 秒），工具描述会提示客户端留足等待时间；
 - 登录过期会提示运行 `doubao2-api login`；触发 429 会提示等待重试；其他错误返回原始错误摘要；
 - stdio 模式下 **stdout 只输出 JSON-RPC**，所有日志走 stderr。
+
+图生图的工具参数示例：
+
+```json
+{"prompt":"改成油画风","size":"1024x1024","n":1,"reference_image_paths":["/path/to/reference.png"]}
+```
+
+```json
+{"prompt":"改成水彩风","reference_images_base64":["data:image/png;base64,...."]}
+```
+
+> 参考图路径由调用方提供，server 会读取该文件并上传到豆包。只应连接可信的 MCP 客户端。
 
 OpenClaw 配置示例：
 
